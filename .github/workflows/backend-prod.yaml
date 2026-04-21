@@ -1,0 +1,65 @@
+name: Backend Deployment - PROD
+
+on:
+  workflow_dispatch:
+
+env:
+  HOST: ${{ vars.HOST_NAME_prod }}
+  USERNAME: ${{ vars.USER_NAME_prod }}
+  PORT: 22
+
+jobs:
+  Deployment:
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
+        working-directory: backend
+    steps:
+      - name: git-clone
+        uses: actions/checkout@v3
+
+      - name: setup-node
+        uses: actions/setup-node@v4.0.3
+
+      - name: install package
+        run: npm install
+
+      - name: Clean from VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          script: "bash /home/admin_user/apps/scripts/run-app.sh clean || true"
+
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          source: "backend"
+          target: /home/admin_user/apps/
+
+      - name: copy script via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          source: scripts/run-app.sh
+          target: /home/admin_user/apps/
+      
+      - name: Run artifact
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          command_timeout: 25s
+          script: "/home/admin_user/apps/scripts/run-app.sh be &"

@@ -1,0 +1,1618 @@
+[
+  {
+    "name": "Midnight Teal",
+    "version": "1.0.0",
+    "description": "Deep teal with cool neutrals — modern, calm, and high-contrast for dashboards.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f0fdfa",
+        "100": "#ccfbf1",
+        "200": "#99f6e4",
+        "300": "#5eead4",
+        "400": "#2dd4bf",
+        "500": "#14b8a6",
+        "600": "#0d9488",
+        "700": "#0f766e",
+        "800": "#115e59",
+        "900": "#134e4a",
+        "950": "#052f2b"
+      },
+      "secondary": {
+        "50": "#f7feff",
+        "100": "#ecfeff",
+        "200": "#dffafe",
+        "300": "#c8f7f2",
+        "400": "#9feee6",
+        "500": "#67e6d3",
+        "600": "#3bd0bf",
+        "700": "#2aa89b",
+        "800": "#207a67",
+        "900": "#144d40",
+        "950": "#072823"
+      },
+      "neutral": {
+        "50": "#fbfbfc",
+        "100": "#f5f7f7",
+        "200": "#eceff0",
+        "300": "#dadee0",
+        "400": "#bfc9ca",
+        "500": "#98a4a6",
+        "600": "#707f81",
+        "700": "#4d5a5c",
+        "800": "#2e393a",
+        "900": "#121717",
+        "950": "#070909"
+      },
+      "success": {
+        "50": "#ecfdf3",
+        "500": "#10b981",
+        "600": "#059669",
+        "700": "#047857"
+      },
+      "warning": {
+        "50": "#fff8e6",
+        "500": "#f59e0b",
+        "600": "#d97706",
+        "700": "#b45309"
+      },
+      "error": {
+        "50": "#fff1f1",
+        "500": "#ef4444",
+        "600": "#dc2626",
+        "700": "#b91c1c"
+      },
+      "info": {
+        "50": "#eff6ff",
+        "500": "#0ea5e9",
+        "600": "#0284c7",
+        "700": "#0369a1"
+      }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfdfd", "tertiary": "#f7f9f9" },
+      "foreground": { "primary": "#042f2e", "secondary": "#115e59", "muted": "#6b8a88" },
+      "border": { "default": "#e6f3f1", "muted": "#f1fbfa", "strong": "#cceee9" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfdfd", "overlay": "rgba(4, 47, 46, 0.8)" },
+      "interactive": {
+        "primary": "#14b8a6",
+        "primaryHover": "#0d9488",
+        "primaryActive": "#0f766e",
+        "secondary": "#67e6d3",
+        "secondaryHover": "#3bd0bf",
+        "secondaryActive": "#2aa89b"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#071f1f", "secondary": "#0f2e2e", "tertiary": "#123636" },
+      "foreground": { "primary": "#f1fcfb", "secondary": "#dff6f3", "muted": "#9fd9cf" },
+      "border": { "default": "#123636", "muted": "#0f2e2e", "strong": "#1b4b48" },
+      "surface": { "default": "#0f2e2e", "elevated": "#123636", "overlay": "rgba(0, 0, 0, 0.75)" },
+      "interactive": {
+        "primary": "#14b8a6",
+        "primaryHover": "#2dd4bf",
+        "primaryActive": "#5eead4",
+        "secondary": "#67e6d3",
+        "secondaryHover": "#9feee6",
+        "secondaryActive": "#c8f7f2"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Coral Mist",
+    "version": "1.0.0",
+    "description": "Soft coral and warm gray — elegant and approachable for product UIs.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff1f0",
+        "100": "#ffe4e2",
+        "200": "#ffc9c5",
+        "300": "#ffa8a0",
+        "400": "#ff7f75",
+        "500": "#ff5448",
+        "600": "#ff2b23",
+        "700": "#d72820",
+        "800": "#a61f1b",
+        "900": "#7a1210",
+        "950": "#3b0504"
+      },
+      "secondary": {
+        "50": "#fbfbfc",
+        "100": "#f7f7f8",
+        "200": "#efeff0",
+        "300": "#e5e6e7",
+        "400": "#cacbcd",
+        "500": "#9ea0a3",
+        "600": "#75777a",
+        "700": "#525457",
+        "800": "#2f3133",
+        "900": "#171718",
+        "950": "#080808"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#faf9f9",
+        "200": "#f4f2f2",
+        "300": "#eae9e9",
+        "400": "#d6d5d6",
+        "500": "#bdbcbc",
+        "600": "#9a9999",
+        "700": "#757474",
+        "800": "#4f4e4e",
+        "900": "#2b2a2a",
+        "950": "#0f0f0f"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff8e6", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff1f1", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffbfa", "tertiary": "#fff7f6" },
+      "foreground": { "primary": "#2b0f0f", "secondary": "#7a1210", "muted": "#bf9f9f" },
+      "border": { "default": "#f4eaea", "muted": "#fff1f0", "strong": "#ffd7d4" },
+      "surface": { "default": "#ffffff", "elevated": "#fff7f6", "overlay": "rgba(43, 15, 15, 0.8)" },
+      "interactive": {
+        "primary": "#ff5448",
+        "primaryHover": "#ff2b23",
+        "primaryActive": "#d72820",
+        "secondary": "#9ea0a3",
+        "secondaryHover": "#75777a",
+        "secondaryActive": "#525457"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#120c0c", "secondary": "#1f1616", "tertiary": "#2a1d1d" },
+      "foreground": { "primary": "#fff7f6", "secondary": "#ffeae8", "muted": "#ffb9b2" },
+      "border": { "default": "#2a1d1d", "muted": "#1f1616", "strong": "#3b2221" },
+      "surface": { "default": "#1f1616", "elevated": "#2a1d1d", "overlay": "rgba(0,0,0,0.8)" },
+      "interactive": {
+        "primary": "#ff5448",
+        "primaryHover": "#ff7f75",
+        "primaryActive": "#ffa8a0",
+        "secondary": "#9ea0a3",
+        "secondaryHover": "#cacbcd",
+        "secondaryActive": "#efeff0"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Saffron Dawn",
+    "version": "1.0.0",
+    "description": "Warm saffron and deep charcoal — energetic yet refined for enterprise apps.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fffaf0",
+        "100": "#fff1d6",
+        "200": "#ffe3ab",
+        "300": "#ffd166",
+        "400": "#ffc122",
+        "500": "#f59e0b",
+        "600": "#d97706",
+        "700": "#b45309",
+        "800": "#92400e",
+        "900": "#78350f",
+        "950": "#4a1e06"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f6f7",
+        "200": "#eeeeef",
+        "300": "#e6e6e7",
+        "400": "#cccccd",
+        "500": "#9e9fa1",
+        "600": "#78797b",
+        "700": "#505153",
+        "800": "#2f3031",
+        "900": "#141415",
+        "950": "#060606"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f5f5f5",
+        "300": "#eaeaea",
+        "400": "#d6d6d6",
+        "500": "#bfbfbf",
+        "600": "#9a9a9a",
+        "700": "#737373",
+        "800": "#4a4a4a",
+        "900": "#1f1f1f",
+        "950": "#090909"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fffaf0", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff1f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffbf7", "tertiary": "#fff7ef" },
+      "foreground": { "primary": "#231b16", "secondary": "#92400e", "muted": "#b78b5d" },
+      "border": { "default": "#fff0df", "muted": "#fffaf0", "strong": "#ffe3ab" },
+      "surface": { "default": "#ffffff", "elevated": "#fffbf7", "overlay": "rgba(35, 27, 22, 0.8)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#d97706",
+        "primaryActive": "#b45309",
+        "secondary": "#9e9fa1",
+        "secondaryHover": "#78797b",
+        "secondaryActive": "#505153"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0f0d0b", "secondary": "#1a1513", "tertiary": "#2b211b" },
+      "foreground": { "primary": "#fff8ef", "secondary": "#ffe8bf", "muted": "#ffd7a1" },
+      "border": { "default": "#2b211b", "muted": "#1a1513", "strong": "#3b2a20" },
+      "surface": { "default": "#1a1513", "elevated": "#2b211b", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#ffc122",
+        "primaryActive": "#ffd166",
+        "secondary": "#9e9fa1",
+        "secondaryHover": "#cccccd",
+        "secondaryActive": "#e6e6e7"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Slate Stone",
+    "version": "1.0.0",
+    "description": "Muted slate greys with subtle blue undertone — professional and understated.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f8fbfd",
+        "100": "#eef6fb",
+        "200": "#e0eef9",
+        "300": "#c6e0f2",
+        "400": "#9fcbe6",
+        "500": "#66b7d9",
+        "600": "#3b93b8",
+        "700": "#2b6f8e",
+        "800": "#234f66",
+        "900": "#173544",
+        "950": "#081827"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f6f7",
+        "200": "#eeeff0",
+        "300": "#e4e6e7",
+        "400": "#c9cdcf",
+        "500": "#9aa0a5",
+        "600": "#6f767b",
+        "700": "#4b5256",
+        "800": "#2e3336",
+        "900": "#121516",
+        "950": "#050506"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f3f4f6",
+        "300": "#e9ebee",
+        "400": "#d6d9dd",
+        "500": "#afb6bd",
+        "600": "#88939b",
+        "700": "#616f78",
+        "800": "#39444b",
+        "900": "#141a1e",
+        "950": "#07090a"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff9f2", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff4f4", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfcfd", "tertiary": "#f6f8f9" },
+      "foreground": { "primary": "#0f172a", "secondary": "#2b6f8e", "muted": "#6b7780" },
+      "border": { "default": "#edf3f7", "muted": "#f6f8f9", "strong": "#d7e8f2" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfcfd", "overlay": "rgba(15,23,42,0.8)" },
+      "interactive": {
+        "primary": "#66b7d9",
+        "primaryHover": "#3b93b8",
+        "primaryActive": "#2b6f8e",
+        "secondary": "#9aa0a5",
+        "secondaryHover": "#6f767b",
+        "secondaryActive": "#4b5256"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0b1114", "secondary": "#12181b", "tertiary": "#182027" },
+      "foreground": { "primary": "#f7fbfc", "secondary": "#dbeef6", "muted": "#9fc1d1" },
+      "border": { "default": "#182027", "muted": "#12181b", "strong": "#24343f" },
+      "surface": { "default": "#12181b", "elevated": "#182027", "overlay": "rgba(0,0,0,0.8)" },
+      "interactive": {
+        "primary": "#66b7d9",
+        "primaryHover": "#9fcbe6",
+        "primaryActive": "#c6e0f2",
+        "secondary": "#9aa0a5",
+        "secondaryHover": "#c9cdcf",
+        "secondaryActive": "#e4e6e7"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Crimson Velvet",
+    "version": "1.0.0",
+    "description": "Rich crimson with muted neutrals — luxurious and attention-grabbing for premium brands.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff2f3",
+        "100": "#ffe6e9",
+        "200": "#ffc9cf",
+        "300": "#ff9aa8",
+        "400": "#ff6a82",
+        "500": "#ef4444",
+        "600": "#dc2626",
+        "700": "#b91c1c",
+        "800": "#961319",
+        "900": "#6f0d12",
+        "950": "#3a0507"
+      },
+      "secondary": {
+        "50": "#fcfbfb",
+        "100": "#f7f6f6",
+        "200": "#efefef",
+        "300": "#e6e6e6",
+        "400": "#cccccc",
+        "500": "#a3a3a3",
+        "600": "#7a7a7a",
+        "700": "#555555",
+        "800": "#343434",
+        "900": "#141414",
+        "950": "#060606"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f4f4f5",
+        "300": "#e9e9ea",
+        "400": "#d1d1d2",
+        "500": "#a8a8a9",
+        "600": "#7f7f80",
+        "700": "#565657",
+        "800": "#383839",
+        "900": "#111112",
+        "950": "#060606"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff6e7", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff1f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffafb", "tertiary": "#fff6f7" },
+      "foreground": { "primary": "#2b0b0b", "secondary": "#961319", "muted": "#b86d6d" },
+      "border": { "default": "#ffecec", "muted": "#fff2f3", "strong": "#ffd2d3" },
+      "surface": { "default": "#ffffff", "elevated": "#fffafb", "overlay": "rgba(43,11,11,0.8)" },
+      "interactive": {
+        "primary": "#ef4444",
+        "primaryHover": "#dc2626",
+        "primaryActive": "#b91c1c",
+        "secondary": "#a3a3a3",
+        "secondaryHover": "#7a7a7a",
+        "secondaryActive": "#555555"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0e0a0a", "secondary": "#1a1111", "tertiary": "#241616" },
+      "foreground": { "primary": "#fff7f7", "secondary": "#ffd9d9", "muted": "#ffb3b3" },
+      "border": { "default": "#241616", "muted": "#1a1111", "strong": "#3b1b1b" },
+      "surface": { "default": "#1a1111", "elevated": "#241616", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#ef4444",
+        "primaryHover": "#ff6a82",
+        "primaryActive": "#ff9aa8",
+        "secondary": "#a3a3a3",
+        "secondaryHover": "#cccccc",
+        "secondaryActive": "#e6e6e6"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Aurora Rose",
+    "version": "1.0.0",
+    "description": "Soft rose with luminous accents — friendly and creative for consumer products.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff6fb",
+        "100": "#ffeef7",
+        "200": "#ffd6ef",
+        "300": "#ffb6e0",
+        "400": "#ff8fcf",
+        "500": "#f472b6",
+        "600": "#db2777",
+        "700": "#be185d",
+        "800": "#9d174d",
+        "900": "#7c1140",
+        "950": "#4a0624"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f7f7f8",
+        "200": "#efeff0",
+        "300": "#e7e6e7",
+        "400": "#d0cfd0",
+        "500": "#a9a7a8",
+        "600": "#7e7c7d",
+        "700": "#565456",
+        "800": "#333233",
+        "900": "#121111",
+        "950": "#050505"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f3f4f6",
+        "300": "#ececf0",
+        "400": "#d9d6db",
+        "500": "#b9b1b9",
+        "600": "#91868f",
+        "700": "#6c5f66",
+        "800": "#42363c",
+        "900": "#1c1416",
+        "950": "#080406"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff5e6", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffafd", "tertiary": "#fff6fb" },
+      "foreground": { "primary": "#2a0e1a", "secondary": "#9d174d", "muted": "#c98aa8" },
+      "border": { "default": "#ffeef7", "muted": "#fff6fb", "strong": "#ffd6ef" },
+      "surface": { "default": "#ffffff", "elevated": "#fffafd", "overlay": "rgba(42,14,26,0.8)" },
+      "interactive": {
+        "primary": "#f472b6",
+        "primaryHover": "#db2777",
+        "primaryActive": "#be185d",
+        "secondary": "#a9a7a8",
+        "secondaryHover": "#7e7c7d",
+        "secondaryActive": "#565456"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0f0b0f", "secondary": "#1b1216", "tertiary": "#271a21" },
+      "foreground": { "primary": "#fff7fb", "secondary": "#ffdfee", "muted": "#ffb6da" },
+      "border": { "default": "#271a21", "muted": "#1b1216", "strong": "#3b222b" },
+      "surface": { "default": "#1b1216", "elevated": "#271a21", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#f472b6",
+        "primaryHover": "#ff8fcf",
+        "primaryActive": "#ffb6e0",
+        "secondary": "#a9a7a8",
+        "secondaryHover": "#d0cfd0",
+        "secondaryActive": "#e7e6e7"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Cobalt Sky",
+    "version": "1.0.0",
+    "description": "Strong cobalt for focused UIs — trusted and crisp for analytics and SaaS.",
+    "colorPalette": {
+      "primary": {
+        "50": "#eef2ff",
+        "100": "#e0e7ff",
+        "200": "#c7d2fe",
+        "300": "#a5b4fc",
+        "400": "#818cf8",
+        "500": "#6366f1",
+        "600": "#4f46e5",
+        "700": "#4338ca",
+        "800": "#3730a3",
+        "900": "#2a1e8b",
+        "950": "#140e5b"
+      },
+      "secondary": {
+        "50": "#f8fafc",
+        "100": "#f1f5ff",
+        "200": "#e6edff",
+        "300": "#d5e3ff",
+        "400": "#b9d1ff",
+        "500": "#8fb8ff",
+        "600": "#63a1ff",
+        "700": "#3a7aff",
+        "800": "#204dff",
+        "900": "#0f2d7a",
+        "950": "#05124b"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#f8fafc",
+        "200": "#eef2f8",
+        "300": "#e2e8f0",
+        "400": "#c7d0df",
+        "500": "#98a2b7",
+        "600": "#707a8f",
+        "700": "#4b5669",
+        "800": "#2a323f",
+        "900": "#0c1520",
+        "950": "#02060a"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff9e6", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff1f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#eff6ff", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfdff", "tertiary": "#f3f6ff" },
+      "foreground": { "primary": "#07133a", "secondary": "#3730a3", "muted": "#7a89a9" },
+      "border": { "default": "#eef2ff", "muted": "#f8fbff", "strong": "#dbe6ff" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfdff", "overlay": "rgba(7,19,58,0.8)" },
+      "interactive": {
+        "primary": "#6366f1",
+        "primaryHover": "#4f46e5",
+        "primaryActive": "#4338ca",
+        "secondary": "#8fb8ff",
+        "secondaryHover": "#63a1ff",
+        "secondaryActive": "#3a7aff"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#050612", "secondary": "#0b1020", "tertiary": "#11162a" },
+      "foreground": { "primary": "#eef6ff", "secondary": "#dbe9ff", "muted": "#a9b9d9" },
+      "border": { "default": "#11162a", "muted": "#0b1020", "strong": "#1b2a47" },
+      "surface": { "default": "#0b1020", "elevated": "#11162a", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#6366f1",
+        "primaryHover": "#818cf8",
+        "primaryActive": "#a5b4fc",
+        "secondary": "#8fb8ff",
+        "secondaryHover": "#b9d1ff",
+        "secondaryActive": "#d5e3ff"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Olive Grove",
+    "version": "1.0.0",
+    "description": "Earthy olive and warm neutrals — approachable and stable for B2B brands.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f6fbf6",
+        "100": "#eef7ee",
+        "200": "#def0dc",
+        "300": "#c8e6c3",
+        "400": "#9fd39a",
+        "500": "#65b56a",
+        "600": "#4b8e49",
+        "700": "#346b36",
+        "800": "#274f26",
+        "900": "#183617",
+        "950": "#07210a"
+      },
+      "secondary": {
+        "50": "#fbfbf8",
+        "100": "#f6f6f1",
+        "200": "#eeeee3",
+        "300": "#e6e6d6",
+        "400": "#d0cfb8",
+        "500": "#a6a68a",
+        "600": "#7e7e66",
+        "700": "#595744",
+        "800": "#3b392b",
+        "900": "#16150b",
+        "950": "#070704"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafaf8",
+        "200": "#f4f4f1",
+        "300": "#ecebe7",
+        "400": "#d7d6ce",
+        "500": "#bdbba8",
+        "600": "#9a9683",
+        "700": "#787467",
+        "800": "#4a473f",
+        "900": "#191814",
+        "950": "#060606"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff9e6", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff3f3", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfdf9", "tertiary": "#f7faf5" },
+      "foreground": { "primary": "#13210f", "secondary": "#274f26", "muted": "#8a8f78" },
+      "border": { "default": "#eef6ea", "muted": "#fbfdf9", "strong": "#ddefd9" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfdf9", "overlay": "rgba(19,33,15,0.8)" },
+      "interactive": {
+        "primary": "#65b56a",
+        "primaryHover": "#4b8e49",
+        "primaryActive": "#346b36",
+        "secondary": "#a6a68a",
+        "secondaryHover": "#7e7e66",
+        "secondaryActive": "#595744"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0b0f0b", "secondary": "#121512", "tertiary": "#1b211b" },
+      "foreground": { "primary": "#f6fbf6", "secondary": "#eaf7e9", "muted": "#cbe6c6" },
+      "border": { "default": "#1b211b", "muted": "#121512", "strong": "#263022" },
+      "surface": { "default": "#121512", "elevated": "#1b211b", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#65b56a",
+        "primaryHover": "#9fd39a",
+        "primaryActive": "#c8e6c3",
+        "secondary": "#a6a68a",
+        "secondaryHover": "#d0cfb8",
+        "secondaryActive": "#e6e6d6"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Amber Dusk",
+    "version": "1.0.0",
+    "description": "Warm amber with dark contrasts — energetic yet grounded for commerce UIs.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff8ed",
+        "100": "#fff1d6",
+        "200": "#ffe3ad",
+        "300": "#ffd07a",
+        "400": "#ffb648",
+        "500": "#f59e0b",
+        "600": "#d97706",
+        "700": "#b45309",
+        "800": "#8a3410",
+        "900": "#612409",
+        "950": "#421303"
+      },
+      "secondary": {
+        "50": "#fbfbf9",
+        "100": "#f7f6f3",
+        "200": "#efeee8",
+        "300": "#e6e5dd",
+        "400": "#d0cdb7",
+        "500": "#a79f88",
+        "600": "#7d7466",
+        "700": "#565042",
+        "800": "#3a352a",
+        "900": "#191610",
+        "950": "#070604"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fdfcf9",
+        "200": "#fbf8f3",
+        "300": "#f5efe6",
+        "400": "#e8dfcf",
+        "500": "#cbbfa3",
+        "600": "#9d866b",
+        "700": "#6f5d48",
+        "800": "#453622",
+        "900": "#1c1209",
+        "950": "#070403"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff8ed", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff5f5", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffaf6", "tertiary": "#fff6ed" },
+      "foreground": { "primary": "#26180b", "secondary": "#8a3410", "muted": "#b78f61" },
+      "border": { "default": "#fff1d6", "muted": "#fff8ed", "strong": "#ffe3ad" },
+      "surface": { "default": "#ffffff", "elevated": "#fffaf6", "overlay": "rgba(38,24,11,0.8)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#d97706",
+        "primaryActive": "#b45309",
+        "secondary": "#a79f88",
+        "secondaryHover": "#7d7466",
+        "secondaryActive": "#565042"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0f0a08", "secondary": "#1a110e", "tertiary": "#241710" },
+      "foreground": { "primary": "#fffaf6", "secondary": "#ffe7b7", "muted": "#ffd39a" },
+      "border": { "default": "#241710", "muted": "#1a110e", "strong": "#3b2416" },
+      "surface": { "default": "#1a110e", "elevated": "#241710", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#ffb648",
+        "primaryActive": "#ffd07a",
+        "secondary": "#a79f88",
+        "secondaryHover": "#d0cdb7",
+        "secondaryActive": "#e6e5dd"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Violet Haze",
+    "version": "1.0.0",
+    "description": "Muted violet and cool gray — stylish and modern for marketing sites.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fbf7ff",
+        "100": "#f5efff",
+        "200": "#e9dbff",
+        "300": "#d6baff",
+        "400": "#c08cff",
+        "500": "#a855f7",
+        "600": "#9333ea",
+        "700": "#7c3aed",
+        "800": "#6b21d6",
+        "900": "#4a157a",
+        "950": "#2b0845"
+      },
+      "secondary": {
+        "50": "#fafafa",
+        "100": "#f4f4f6",
+        "200": "#e9e9ee",
+        "300": "#dcdce6",
+        "400": "#c9c9d7",
+        "500": "#9f9fb3",
+        "600": "#77778f",
+        "700": "#505063",
+        "800": "#30313c",
+        "900": "#121216",
+        "950": "#050507"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfbfc",
+        "200": "#f4f4f6",
+        "300": "#ececf0",
+        "400": "#d6d6db",
+        "500": "#b1aeb9",
+        "600": "#8b8593",
+        "700": "#645e6b",
+        "800": "#3d3640",
+        "900": "#161216",
+        "950": "#050306"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff8ea", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#eff6ff", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbf9ff", "tertiary": "#f7f3ff" },
+      "foreground": { "primary": "#231036", "secondary": "#6b21d6", "muted": "#9b86ac" },
+      "border": { "default": "#f1eaff", "muted": "#fbf9ff", "strong": "#e1d1ff" },
+      "surface": { "default": "#ffffff", "elevated": "#fbf9ff", "overlay": "rgba(35,16,54,0.8)" },
+      "interactive": {
+        "primary": "#a855f7",
+        "primaryHover": "#9333ea",
+        "primaryActive": "#7c3aed",
+        "secondary": "#9f9fb3",
+        "secondaryHover": "#77778f",
+        "secondaryActive": "#505063"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0a0710", "secondary": "#11081a", "tertiary": "#1b1028" },
+      "foreground": { "primary": "#fff8ff", "secondary": "#f3d9ff", "muted": "#c7aee6" },
+      "border": { "default": "#1b1028", "muted": "#11081a", "strong": "#2b1736" },
+      "surface": { "default": "#11081a", "elevated": "#1b1028", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#a855f7",
+        "primaryHover": "#c08cff",
+        "primaryActive": "#d6baff",
+        "secondary": "#9f9fb3",
+        "secondaryHover": "#c9c9d7",
+        "secondaryActive": "#dcdce6"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Graphite",
+    "version": "1.0.0",
+    "description": "High-contrast graphite greys — minimal, elegant, and ideal for developer tools.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fafafa",
+        "100": "#f4f4f5",
+        "200": "#e9e9eb",
+        "300": "#d6d6d9",
+        "400": "#bfbfc3",
+        "500": "#8f8f95",
+        "600": "#6f6f76",
+        "700": "#4f4f56",
+        "800": "#333338",
+        "900": "#141417",
+        "950": "#080808"
+      },
+      "secondary": {
+        "50": "#ffffff",
+        "100": "#fbfbfb",
+        "200": "#f2f2f3",
+        "300": "#e6e6e8",
+        "400": "#cfcfd1",
+        "500": "#9e9ea1",
+        "600": "#7b7b7f",
+        "700": "#56555a",
+        "800": "#343437",
+        "900": "#121214",
+        "950": "#060606"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfbfb",
+        "200": "#f5f5f6",
+        "300": "#ececec",
+        "400": "#d7d7d8",
+        "500": "#b0b0b2",
+        "600": "#8a8a8e",
+        "700": "#656568",
+        "800": "#3d3d3f",
+        "900": "#151516",
+        "950": "#060606"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fffaf2", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff1f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfbfb", "tertiary": "#f7f7f7" },
+      "foreground": { "primary": "#0b0b0b", "secondary": "#4f4f56", "muted": "#8a8a8e" },
+      "border": { "default": "#f2f2f3", "muted": "#fbfbfb", "strong": "#e6e6e8" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfbfb", "overlay": "rgba(11,11,11,0.8)" },
+      "interactive": {
+        "primary": "#8f8f95",
+        "primaryHover": "#6f6f76",
+        "primaryActive": "#4f4f56",
+        "secondary": "#9e9ea1",
+        "secondaryHover": "#7b7b7f",
+        "secondaryActive": "#56555a"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#070707", "secondary": "#0f0f0f", "tertiary": "#141414" },
+      "foreground": { "primary": "#f8f8f9", "secondary": "#d9d9db", "muted": "#bdbdc0" },
+      "border": { "default": "#141414", "muted": "#0f0f0f", "strong": "#1f1f1f" },
+      "surface": { "default": "#0f0f0f", "elevated": "#141414", "overlay": "rgba(0,0,0,0.9)" },
+      "interactive": {
+        "primary": "#8f8f95",
+        "primaryHover": "#bfbfc3",
+        "primaryActive": "#d6d6d9",
+        "secondary": "#9e9ea1",
+        "secondaryHover": "#cfcfd1",
+        "secondaryActive": "#e6e6e8"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Sage Meadow",
+    "version": "1.0.0",
+    "description": "Fresh sage greens — calm, modern, and great for wellness/productivity apps.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f6fdf7",
+        "100": "#edf9ee",
+        "200": "#dff3dd",
+        "300": "#c6e9c2",
+        "400": "#9fdba0",
+        "500": "#65c284",
+        "600": "#3fa265",
+        "700": "#2e7950",
+        "800": "#235a3c",
+        "900": "#183927",
+        "950": "#062318"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f7f6",
+        "200": "#eef0ee",
+        "300": "#e6e8e6",
+        "400": "#d0d4d0",
+        "500": "#a6aba6",
+        "600": "#7d837d",
+        "700": "#565c56",
+        "800": "#333933",
+        "900": "#111411",
+        "950": "#050504"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfbfb",
+        "200": "#f5f6f5",
+        "300": "#eceeec",
+        "400": "#d7dbd7",
+        "500": "#b0b6b0",
+        "600": "#888f88",
+        "700": "#616861",
+        "800": "#3d4440",
+        "900": "#171a17",
+        "950": "#050605"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fffaf0", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff4f4", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfdfb", "tertiary": "#f6f9f6" },
+      "foreground": { "primary": "#0e2a1d", "secondary": "#235a3c", "muted": "#88a08c" },
+      "border": { "default": "#eef7ee", "muted": "#fbfdfb", "strong": "#ddf0dc" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfdfb", "overlay": "rgba(14,42,29,0.8)" },
+      "interactive": {
+        "primary": "#65c284",
+        "primaryHover": "#3fa265",
+        "primaryActive": "#2e7950",
+        "secondary": "#a6aba6",
+        "secondaryHover": "#7d837d",
+        "secondaryActive": "#565c56"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#07100b", "secondary": "#0f1a14", "tertiary": "#16241b" },
+      "foreground": { "primary": "#f7fdf7", "secondary": "#e6f7e9", "muted": "#c8edcf" },
+      "border": { "default": "#16241b", "muted": "#0f1a14", "strong": "#243627" },
+      "surface": { "default": "#0f1a14", "elevated": "#16241b", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#65c284",
+        "primaryHover": "#9fdba0",
+        "primaryActive": "#c6e9c2",
+        "secondary": "#a6aba6",
+        "secondaryHover": "#d0d4d0",
+        "secondaryActive": "#e6e8e6"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Marigold",
+    "version": "1.0.0",
+    "description": "Sunny marigold with soft contrasts — cheerful and bold for consumer brands.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff9ed",
+        "100": "#fff3d6",
+        "200": "#ffe5ad",
+        "300": "#ffd07a",
+        "400": "#ffb648",
+        "500": "#f59e0b",
+        "600": "#d97706",
+        "700": "#b45309",
+        "800": "#8a3410",
+        "900": "#612409",
+        "950": "#3d1302"
+      },
+      "secondary": {
+        "50": "#fffdf8",
+        "100": "#fffaf3",
+        "200": "#fff5e6",
+        "300": "#fff0d9",
+        "400": "#ffdfbf",
+        "500": "#ffd79e",
+        "600": "#f0c97b",
+        "700": "#cca35a",
+        "800": "#9c723d",
+        "900": "#6a4726",
+        "950": "#40270f"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fffcfb",
+        "200": "#fff7f4",
+        "300": "#fff0e9",
+        "400": "#f7e6d4",
+        "500": "#e0cbb1",
+        "600": "#bfa286",
+        "700": "#947b60",
+        "800": "#674f3a",
+        "900": "#2f2216",
+        "950": "#0f0b06"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff9ed", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffdf8", "tertiary": "#fff9ef" },
+      "foreground": { "primary": "#372205", "secondary": "#8a3410", "muted": "#c89f6d" },
+      "border": { "default": "#fff3d6", "muted": "#fff9ed", "strong": "#ffe5ad" },
+      "surface": { "default": "#ffffff", "elevated": "#fffdf8", "overlay": "rgba(55,34,5,0.8)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#d97706",
+        "primaryActive": "#b45309",
+        "secondary": "#ffd79e",
+        "secondaryHover": "#f0c97b",
+        "secondaryActive": "#cca35a"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0f0b07", "secondary": "#1a120d", "tertiary": "#271814" },
+      "foreground": { "primary": "#fffaf2", "secondary": "#ffe6b7", "muted": "#ffd79e" },
+      "border": { "default": "#271814", "muted": "#1a120d", "strong": "#3b2419" },
+      "surface": { "default": "#1a120d", "elevated": "#271814", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#f59e0b",
+        "primaryHover": "#ffb648",
+        "primaryActive": "#ffd07a",
+        "secondary": "#ffd79e",
+        "secondaryHover": "#ffdfbf",
+        "secondaryActive": "#fff0d9"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Berry Plum",
+    "version": "1.0.0",
+    "description": "Deep berry tones with warm accents — bold and contemporary for creative products.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff6fb",
+        "100": "#fdeef7",
+        "200": "#fbd7ef",
+        "300": "#f6b9df",
+        "400": "#f08ecb",
+        "500": "#ec4899",
+        "600": "#db2777",
+        "700": "#be185d",
+        "800": "#9d174d",
+        "900": "#6b1340",
+        "950": "#390725"
+      },
+      "secondary": {
+        "50": "#fbf9fb",
+        "100": "#f6f3f6",
+        "200": "#efe9ef",
+        "300": "#e7d8e3",
+        "400": "#d3c0d1",
+        "500": "#b39aa8",
+        "600": "#8b6e7d",
+        "700": "#624f5d",
+        "800": "#3a3035",
+        "900": "#151014",
+        "950": "#060206"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafb",
+        "200": "#f4f4f6",
+        "300": "#ececf0",
+        "400": "#d6d6db",
+        "500": "#b7b1b7",
+        "600": "#91898f",
+        "700": "#6b6167",
+        "800": "#433b3f",
+        "900": "#160f12",
+        "950": "#040203"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff6e8", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fffafd", "tertiary": "#fff6fb" },
+      "foreground": { "primary": "#26061a", "secondary": "#9d174d", "muted": "#b6899e" },
+      "border": { "default": "#fdeef7", "muted": "#fff6fb", "strong": "#fbd7ef" },
+      "surface": { "default": "#ffffff", "elevated": "#fffafd", "overlay": "rgba(38,6,26,0.8)" },
+      "interactive": {
+        "primary": "#ec4899",
+        "primaryHover": "#db2777",
+        "primaryActive": "#be185d",
+        "secondary": "#b39aa8",
+        "secondaryHover": "#8b6e7d",
+        "secondaryActive": "#624f5d"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0c0710", "secondary": "#160c14", "tertiary": "#21121a" },
+      "foreground": { "primary": "#fff7fb", "secondary": "#ffd9f1", "muted": "#ffb7dd" },
+      "border": { "default": "#21121a", "muted": "#160c14", "strong": "#2f1524" },
+      "surface": { "default": "#160c14", "elevated": "#21121a", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#ec4899",
+        "primaryHover": "#f08ecb",
+        "primaryActive": "#f6b9df",
+        "secondary": "#b39aa8",
+        "secondaryHover": "#d3c0d1",
+        "secondaryActive": "#e7d8e3"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Steel Blue",
+    "version": "1.0.0",
+    "description": "Muted steel-blue palette — stable, readable, and excellent for internal tools.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f6f9fb",
+        "100": "#eef5fb",
+        "200": "#dfebf7",
+        "300": "#c7dff1",
+        "400": "#9fcfe6",
+        "500": "#66b0d1",
+        "600": "#3e88b0",
+        "700": "#2c5f86",
+        "800": "#1f425f",
+        "900": "#0f2a3f",
+        "950": "#071628"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f7f8",
+        "200": "#eef0f2",
+        "300": "#e6e9ec",
+        "400": "#cfd6db",
+        "500": "#9fa9b2",
+        "600": "#7a868f",
+        "700": "#55636a",
+        "800": "#323f44",
+        "900": "#0e181c",
+        "950": "#030608"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fafafa",
+        "200": "#f3f4f6",
+        "300": "#eceff1",
+        "400": "#d7dde2",
+        "500": "#b0b9bf",
+        "600": "#88939a",
+        "700": "#616d73",
+        "800": "#394446",
+        "900": "#0f1718",
+        "950": "#030506"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fffaf1", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#eff6ff", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfcfd", "tertiary": "#f6f9fb" },
+      "foreground": { "primary": "#022434", "secondary": "#1f425f", "muted": "#8095a3" },
+      "border": { "default": "#eef5fb", "muted": "#fbfcfd", "strong": "#dfeaf7" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfcfd", "overlay": "rgba(2,36,52,0.8)" },
+      "interactive": {
+        "primary": "#66b0d1",
+        "primaryHover": "#3e88b0",
+        "primaryActive": "#2c5f86",
+        "secondary": "#9fa9b2",
+        "secondaryHover": "#7a868f",
+        "secondaryActive": "#55636a"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#071017", "secondary": "#0f1b24", "tertiary": "#172630" },
+      "foreground": { "primary": "#f8fbfc", "secondary": "#d9eef8", "muted": "#b6d7e8" },
+      "border": { "default": "#172630", "muted": "#0f1b24", "strong": "#233843" },
+      "surface": { "default": "#0f1b24", "elevated": "#172630", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#66b0d1",
+        "primaryHover": "#9fcfe6",
+        "primaryActive": "#c7dff1",
+        "secondary": "#9fa9b2",
+        "secondaryHover": "#cfd6db",
+        "secondaryActive": "#e6e9ec"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Burnt Copper",
+    "version": "1.0.0",
+    "description": "Warm copper with deep accents — premium feel for finance and luxury products.",
+    "colorPalette": {
+      "primary": {
+        "50": "#fff6f2",
+        "100": "#ffece4",
+        "200": "#ffd6c8",
+        "300": "#ffb08a",
+        "400": "#ff8b53",
+        "500": "#c2412b",
+        "600": "#9b3021",
+        "700": "#712218",
+        "800": "#4b170f",
+        "900": "#2e0b07",
+        "950": "#140403"
+      },
+      "secondary": {
+        "50": "#fbfaf9",
+        "100": "#f6f3f2",
+        "200": "#efe9e8",
+        "300": "#e7dfdd",
+        "400": "#d0c7c5",
+        "500": "#a99a96",
+        "600": "#7f726f",
+        "700": "#564948",
+        "800": "#332924",
+        "900": "#18120f",
+        "950": "#050302"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fffbfa",
+        "200": "#fff6f3",
+        "300": "#f6eeeb",
+        "400": "#eadcd8",
+        "500": "#cfb8b3",
+        "600": "#a58f89",
+        "700": "#7d6762",
+        "800": "#513b38",
+        "900": "#211210",
+        "950": "#080402"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff6e8", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff3f3", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fff9f8", "tertiary": "#fff5f3" },
+      "foreground": { "primary": "#2b1109", "secondary": "#712218", "muted": "#b27f72" },
+      "border": { "default": "#ffece4", "muted": "#fff6f2", "strong": "#ffd6c8" },
+      "surface": { "default": "#ffffff", "elevated": "#fff9f8", "overlay": "rgba(43,17,9,0.8)" },
+      "interactive": {
+        "primary": "#c2412b",
+        "primaryHover": "#9b3021",
+        "primaryActive": "#712218",
+        "secondary": "#a99a96",
+        "secondaryHover": "#7f726f",
+        "secondaryActive": "#564948"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#0b0706", "secondary": "#17100e", "tertiary": "#241612" },
+      "foreground": { "primary": "#fff8f6", "secondary": "#ffdcca", "muted": "#ffc6a9" },
+      "border": { "default": "#241612", "muted": "#17100e", "strong": "#372017" },
+      "surface": { "default": "#17100e", "elevated": "#241612", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#c2412b",
+        "primaryHover": "#ff8b53",
+        "primaryActive": "#ffb08a",
+        "secondary": "#a99a96",
+        "secondaryHover": "#d0c7c5",
+        "secondaryActive": "#e7dfdd"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Celestial Indigo",
+    "version": "1.0.0",
+    "description": "Deep indigo with luminous accents — tech-forward and authoritative.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f5f7ff",
+        "100": "#ecefff",
+        "200": "#dfe6ff",
+        "300": "#c7d6ff",
+        "400": "#a6b6ff",
+        "500": "#6373f9",
+        "600": "#4c5cf2",
+        "700": "#3a46d3",
+        "800": "#2b347f",
+        "900": "#181a4f",
+        "950": "#08092a"
+      },
+      "secondary": {
+        "50": "#fbfbff",
+        "100": "#f5f6ff",
+        "200": "#ebeefe",
+        "300": "#dee6fe",
+        "400": "#cbd5fb",
+        "500": "#9fb0f7",
+        "600": "#7a8cf0",
+        "700": "#5760d9",
+        "800": "#3a44b2",
+        "900": "#1b1e6a",
+        "950": "#070733"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfbfc",
+        "200": "#f3f5f8",
+        "300": "#e9edf3",
+        "400": "#d6dbe8",
+        "500": "#aeb7ca",
+        "600": "#8894a7",
+        "700": "#5f6a84",
+        "800": "#333b4e",
+        "900": "#0e1520",
+        "950": "#03060a"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff8e6", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff3f3", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfbff", "tertiary": "#f5f7ff" },
+      "foreground": { "primary": "#07103a", "secondary": "#2b347f", "muted": "#94a0c6" },
+      "border": { "default": "#ecefff", "muted": "#fbfbff", "strong": "#dfe6ff" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfbff", "overlay": "rgba(7,16,58,0.8)" },
+      "interactive": {
+        "primary": "#6373f9",
+        "primaryHover": "#4c5cf2",
+        "primaryActive": "#3a46d3",
+        "secondary": "#9fb0f7",
+        "secondaryHover": "#7a8cf0",
+        "secondaryActive": "#5760d9"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#060815", "secondary": "#0d1326", "tertiary": "#121732" },
+      "foreground": { "primary": "#f8f9ff", "secondary": "#dfe9ff", "muted": "#b9c7ef" },
+      "border": { "default": "#121732", "muted": "#0d1326", "strong": "#202746" },
+      "surface": { "default": "#0d1326", "elevated": "#121732", "overlay": "rgba(0,0,0,0.9)" },
+      "interactive": {
+        "primary": "#6373f9",
+        "primaryHover": "#a6b6ff",
+        "primaryActive": "#c7d6ff",
+        "secondary": "#9fb0f7",
+        "secondaryHover": "#cbd5fb",
+        "secondaryActive": "#dee6fe"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Mint Frost",
+    "version": "1.0.0",
+    "description": "Cool mint with crisp neutrals — fresh and modern for fintech or health apps.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f3fffb",
+        "100": "#e8fff6",
+        "200": "#cffff0",
+        "300": "#a6f1e1",
+        "400": "#71e6cc",
+        "500": "#3adab0",
+        "600": "#24b28e",
+        "700": "#197a63",
+        "800": "#12543f",
+        "900": "#0b2b22",
+        "950": "#05150f"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f6f6",
+        "200": "#eef0ef",
+        "300": "#e6eae8",
+        "400": "#d0d7d4",
+        "500": "#aab9b6",
+        "600": "#7e8f8b",
+        "700": "#545c59",
+        "800": "#313737",
+        "900": "#0f1313",
+        "950": "#040505"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfdfc",
+        "200": "#f4f8f7",
+        "300": "#eaf0ef",
+        "400": "#d6e3e1",
+        "500": "#b0c8c5",
+        "600": "#89a3a0",
+        "700": "#627b78",
+        "800": "#3b4f4c",
+        "900": "#0e1918",
+        "950": "#030606"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fff8ea", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff3f4", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#f0f9ff", "500": "#0ea5e9", "600": "#0284c7", "700": "#0369a1" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfffd", "tertiary": "#f3fffb" },
+      "foreground": { "primary": "#02271f", "secondary": "#12543f", "muted": "#7aa69e" },
+      "border": { "default": "#e8fff6", "muted": "#fbfffd", "strong": "#cffff0" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfffd", "overlay": "rgba(2,39,31,0.8)" },
+      "interactive": {
+        "primary": "#3adab0",
+        "primaryHover": "#24b28e",
+        "primaryActive": "#197a63",
+        "secondary": "#aab9b6",
+        "secondaryHover": "#7e8f8b",
+        "secondaryActive": "#545c59"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#071211", "secondary": "#0f1b1a", "tertiary": "#162524" },
+      "foreground": { "primary": "#f7fffb", "secondary": "#dcfff1", "muted": "#bdf0db" },
+      "border": { "default": "#162524", "muted": "#0f1b1a", "strong": "#243934" },
+      "surface": { "default": "#0f1b1a", "elevated": "#162524", "overlay": "rgba(0,0,0,0.85)" },
+      "interactive": {
+        "primary": "#3adab0",
+        "primaryHover": "#71e6cc",
+        "primaryActive": "#a6f1e1",
+        "secondary": "#aab9b6",
+        "secondaryHover": "#d0d7d4",
+        "secondaryActive": "#e6eae8"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  },
+
+  {
+    "name": "Charcoal Night",
+    "version": "1.0.0",
+    "description": "Dark charcoal with subtle blue highlights — excellent for code editors and dashboards.",
+    "colorPalette": {
+      "primary": {
+        "50": "#f7f8fb",
+        "100": "#eef1f7",
+        "200": "#dee5ef",
+        "300": "#c7d6e0",
+        "400": "#9fb2c4",
+        "500": "#6b85a2",
+        "600": "#4f637f",
+        "700": "#364556",
+        "800": "#232f39",
+        "900": "#0f1a20",
+        "950": "#071015"
+      },
+      "secondary": {
+        "50": "#fbfbfb",
+        "100": "#f6f6f7",
+        "200": "#efeff1",
+        "300": "#e6e9ec",
+        "400": "#cfd6db",
+        "500": "#9fa9b2",
+        "600": "#7a848c",
+        "700": "#555f66",
+        "800": "#31393e",
+        "900": "#0e1316",
+        "950": "#030507"
+      },
+      "neutral": {
+        "50": "#ffffff",
+        "100": "#fbfbfc",
+        "200": "#f4f5f6",
+        "300": "#eceff1",
+        "400": "#d6dbe0",
+        "500": "#aeb7bf",
+        "600": "#88929b",
+        "700": "#616b73",
+        "800": "#333a40",
+        "900": "#0d1316",
+        "950": "#020406"
+      },
+      "success": { "50": "#ecfdf5", "500": "#10b981", "600": "#059669", "700": "#047857" },
+      "warning": { "50": "#fffaf2", "500": "#f59e0b", "600": "#d97706", "700": "#b45309" },
+      "error": { "50": "#fff2f2", "500": "#ef4444", "600": "#dc2626", "700": "#b91c1c" },
+      "info": { "50": "#eff6ff", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8" }
+    },
+    "lightTheme": {
+      "background": { "primary": "#ffffff", "secondary": "#fbfbfc", "tertiary": "#f7f8fb" },
+      "foreground": { "primary": "#07101a", "secondary": "#232f39", "muted": "#808d98" },
+      "border": { "default": "#eef1f7", "muted": "#fbfbfc", "strong": "#dfe7ef" },
+      "surface": { "default": "#ffffff", "elevated": "#fbfbfc", "overlay": "rgba(7,16,26,0.8)" },
+      "interactive": {
+        "primary": "#6b85a2",
+        "primaryHover": "#4f637f",
+        "primaryActive": "#364556",
+        "secondary": "#9fa9b2",
+        "secondaryHover": "#7a848c",
+        "secondaryActive": "#555f66"
+      }
+    },
+    "darkTheme": {
+      "background": { "primary": "#06080a", "secondary": "#0d1214", "tertiary": "#13191c" },
+      "foreground": { "primary": "#f8fafc", "secondary": "#dfe9f2", "muted": "#b6c4cf" },
+      "border": { "default": "#13191c", "muted": "#0d1214", "strong": "#1b2328" },
+      "surface": { "default": "#0d1214", "elevated": "#13191c", "overlay": "rgba(0,0,0,0.9)" },
+      "interactive": {
+        "primary": "#6b85a2",
+        "primaryHover": "#9fb2c4",
+        "primaryActive": "#c7d6e0",
+        "secondary": "#9fa9b2",
+        "secondaryHover": "#cfd6db",
+        "secondaryActive": "#e6e9ec"
+      }
+    },
+    "isActive": false,
+    "isDefault": false,
+    "metadata": { "exportCount": 0, "usageCount": 0, "lastUsed": null },
+    "presets": [],
+    "settings": { "allowUserCustomization": true, "enablePreview": true, "autoGenerateShades": true }
+  }
+
+]

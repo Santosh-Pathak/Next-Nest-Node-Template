@@ -1,0 +1,237 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Model, Types } from 'mongoose';
+import { Token, TokenDocument, TokenType } from '../schemas/token.schema';
+import { FactoryService } from '@shared/services/factory.service';
+import * as crypto from 'crypto';
+
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: string;
+  jti?: string;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+@Injectable()
+export class TokenService {
+  constructor(
+    @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+    private factoryService: FactoryService,
+  ) {}
+
+  /**
+   * Generate a unique token ID
+   */
+  private generateTokenId(): string {
+    return crypto.randomBytes(16).toString('hex');
+  }
+
+  /**
+   * Generate authentication tokens (access and refresh)
+   */
+  async generateAuthTokens(user: { id: string; email: string; role: string }): Promise<AuthTokens> {
+    const accessTokenId = this.generateTokenId();
+    const refreshTokenId = this.generateTokenId();
+
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessTokenExpiry = this.configService.get<string>('jwt.expiresIn') || '1h';
+    const refreshTokenExpiry = this.configService.get<string>('jwt.refreshExpiresIn') || '7d';
+
+    // Generate access token
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const accessToken = this.jwtService.sign({ ...payload, jti: accessTokenId }, {
+      secret: this.configService.get<string>('jwt.secret'),
+      expiresIn: accessTokenExpiry,
+    } as any);
+
+    // Generate refresh token
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const refreshToken = this.jwtService.sign({ ...payload, jti: refreshTokenId }, {
+      secret: this.configService.get<string>('jwt.refreshSecret'),
+      expiresIn: refreshTokenExpiry,
+    } as any);
+
+    // Calculate expiration dates
+    const accessTokenExpiresAt = new Date(Date.now() + this.parseExpiry(accessTokenExpiry));
+    const refreshTokenExpiresAt = new Date(Date.now() + this.parseExpiry(refreshTokenExpiry));
+
+    // Save tokens to database
+    await this.factoryService.createMany(this.tokenModel, [
+      {
+        token: accessTokenId,
+        user: new Types.ObjectId(user.id),
+        type: TokenType.ACCESS,
+        expires: accessTokenExpiresAt,
+        blacklisted: false,
+      },
+      {
+        token: refreshTokenId,
+        user: new Types.ObjectId(user.id),
+        type: TokenType.REFRESH,
+        expires: refreshTokenExpiresAt,
+        blacklisted: false,
+      },
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  /**
+   * Generate a new access token from refresh token
+   */
+  async generateAccessToken(refreshToken: string): Promise<string> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('jwt.refreshSecret'),
+      }) as JwtPayload;
+
+      // Check if refresh token is blacklisted
+      const isBlacklisted = await this.isTokenBlacklisted(payload.jti!, TokenType.REFRESH);
+      if (isBlacklisted) {
+        throw new UnauthorizedException('Refresh token has been revoked');
+      }
+
+      const accessTokenId = this.generateTokenId();
+      const accessTokenExpiry = this.configService.get<string>('jwt.expiresIn') || '1h';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const accessToken = this.jwtService.sign(
+        {
+          sub: payload.sub,
+          email: payload.email,
+          role: payload.role,
+          jti: accessTokenId,
+        },
+        {
+          secret: this.configService.get<string>('jwt.secret'),
+          expiresIn: accessTokenExpiry,
+        } as any,
+      );
+
+      // Save new access token
+      const accessTokenExpiresAt = new Date(Date.now() + this.parseExpiry(accessTokenExpiry));
+      await this.factoryService.create(this.tokenModel, {
+        token: accessTokenId,
+        user: new Types.ObjectId(payload.sub),
+        type: TokenType.ACCESS,
+        expires: accessTokenExpiresAt,
+        blacklisted: false,
+      });
+
+      return accessToken;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  /**
+   * Refresh both access and refresh tokens
+   */
+  async refreshAuthTokens(refreshToken: string): Promise<AuthTokens> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('jwt.refreshSecret'),
+      }) as JwtPayload;
+
+      // Check if refresh token is blacklisted
+      const isBlacklisted = await this.isTokenBlacklisted(payload.jti!, TokenType.REFRESH);
+      if (isBlacklisted) {
+        throw new UnauthorizedException('Refresh token has been revoked');
+      }
+
+      // Blacklist old refresh token
+      await this.blacklistToken(payload.jti!, TokenType.REFRESH);
+
+      // Generate new tokens
+      return this.generateAuthTokens({
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role,
+      });
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  /**
+   * Blacklist a token
+   */
+  async blacklistToken(tokenId: string, type: TokenType): Promise<void> {
+    await this.factoryService.updateOne(
+      this.tokenModel,
+      { token: tokenId, type },
+      { blacklisted: true },
+    );
+  }
+
+  /**
+   * Check if token is blacklisted
+   */
+  async isTokenBlacklisted(tokenId: string, type: TokenType): Promise<boolean> {
+    const token = await this.factoryService.findOne(this.tokenModel, {
+      token: tokenId,
+      type,
+      blacklisted: true,
+    });
+
+    return !!token;
+  }
+
+  /**
+   * Revoke all tokens for a user
+   */
+  async revokeAllUserTokens(userId: string): Promise<void> {
+    await this.factoryService.updateMany(
+      this.tokenModel,
+      { user: new Types.ObjectId(userId) },
+      { blacklisted: true },
+    );
+  }
+
+  /**
+   * Delete expired tokens (cleanup job)
+   */
+  async deleteExpiredTokens(): Promise<void> {
+    await this.factoryService.deleteMany(this.tokenModel, {
+      expires: { $lt: new Date() },
+    });
+  }
+
+  /**
+   * Parse expiry string to milliseconds
+   */
+  private parseExpiry(expiry: string): number {
+    const unit = expiry.slice(-1);
+    const value = parseInt(expiry.slice(0, -1), 10);
+
+    switch (unit) {
+      case 's':
+        return value * 1000;
+      case 'm':
+        return value * 60 * 1000;
+      case 'h':
+        return value * 60 * 60 * 1000;
+      case 'd':
+        return value * 24 * 60 * 60 * 1000;
+      default:
+        return 60 * 60 * 1000; // Default 1 hour
+    }
+  }
+}

@@ -1,0 +1,115 @@
+prometheus.remote_write "local" {
+  endpoint {
+    url = "https://cm-stt-prod-01.westeurope.cloudapp.azure.com/metrics/api/v1/push"
+     headers = {
+      "X-Scope-OrgID" = "tedekstra",
+    }
+	basic_auth {
+        username = "monuser"
+        password = "FMfcgzQbfxgcVjBGhVHCHDBlNtMjtwhT"
+    }
+  }
+  external_labels = {
+    hostname = "myhostname",
+  }
+}
+
+prometheus.scrape "linux_node" {
+  targets = prometheus.exporter.unix.node.targets
+  forward_to = [
+    prometheus.remote_write.local.receiver,
+  ]
+}
+
+prometheus.exporter.unix "node" {
+}
+
+loki.relabel "journal" {
+  forward_to = [loki.write.local.receiver]
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+  rule {
+    source_labels = ["__journal__boot_id"]
+    target_label  = "boot_id"
+  }
+  rule {
+    source_labels = ["__journal__transport"]
+    target_label  = "transport"
+  }
+  rule {
+    source_labels = ["__journal_priority_keyword"]
+    target_label  = "level"
+  }
+  rule {
+    source_labels = ["__journal__hostname"]
+    target_label  = "instance"
+  }
+}
+
+loki.source.journal "read" {
+  forward_to = [
+  ]
+  relabel_rules = loki.relabel.journal.rules
+  labels = {
+    "job" = "integrations/node_exporter",
+  }
+}
+prometheus.scrape "static" {
+  forward_to = [
+    prometheus.remote_write.local.receiver,
+  ]
+  targets = [
+    {
+      "__address__" = "localhost:8080",
+    },
+  ]
+}
+
+loki.source.file "access_logs" {
+  targets = [
+    {
+      "__path__" = "/home/admin_user/apps/backend/apps.log",
+    },
+    {
+      "__path__" = "/home/admin_user/apps/frontend/apps.log",
+    },
+    {
+      "__path__" = "/var/log/nginx/access.log",
+    },
+    {
+      "__path__" = "/var/log/nginx/error.log",
+    },
+  ]
+  forward_to = [
+    loki.process.access_logs.receiver,
+  ]
+}
+
+loki.process "access_logs" {
+  forward_to  = [loki.write.local.receiver]
+  stage.regex {
+    expression  = "^(?P<remote_ip>[^ ]+) - (?:\\S+) \\[(?P<timestamp>.*)\\] (?:.*)"
+  }
+  
+  stage.timestamp {
+    source  = "timestamp"
+    format  = "02/Jan/2006:15:04:05 +0000"
+  }
+}
+
+loki.write "local" {
+  external_labels = {
+    hostname = "myhostname",
+  }
+  endpoint {
+    url = "https://cm-stt-prod-01.westeurope.cloudapp.azure.com/logs/loki/api/v1/push"
+
+    basic_auth {
+      username = "monuser"
+      password = "FMfcgzQbfxgcVjBGhVHCHDBlNtMjtwhT"
+    }
+  }
+}

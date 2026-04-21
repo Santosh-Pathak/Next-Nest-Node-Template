@@ -1,0 +1,87 @@
+name: Frontend Deployment - PROD
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  HOST: ${{ vars.HOST_NAME_prod }}
+  USERNAME: ${{ vars.USER_NAME_prod }}
+  PORT: 22
+  NEXT_PUBLIC_API_URL: https://anywhere-anyhouse.tdkglobal.com/api
+  NEXT_PUBLIC_DOMAIN: anywhere-anyhouse.tdkglobal.com
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build-npm
+        run: |
+          cd ./frontend
+          npm install
+          npm run build
+          ls -la
+          pwd
+
+      - name: create tar
+        run: |
+          # Change to create tar from the contents of frontend directory, not the directory itself
+          cd ./frontend
+          tar -czf ../frontend.tar .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-tar
+          path: ./frontend.tar
+
+  Upload-Run:
+    runs-on: self-hosted
+    needs: Build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-tar
+          path: ./
+
+      - name: copy tar build via ssh
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          source: "./frontend.tar"
+          target: /home/admin_user/apps/
+
+      - name: copy script via ssh password
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          source: scripts/run-app.sh
+          target: /home/admin_user/apps/
+
+      - name: Run artifact
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.VM_KEY_prod }}
+          port: ${{ env.PORT }}
+          command_timeout: 350s
+          script: bash /home/admin_user/apps/scripts/run-app.sh fe
