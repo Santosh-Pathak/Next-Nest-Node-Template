@@ -142,22 +142,12 @@ const DynamicTable = <T,>({
       }
 
       // Determine placeholder based on current page path
-      if (pathname.includes('/manage-customers')) {
-         return 'Search customers...'
-      } else if (pathname.includes('/manage-consultants')) {
-         return 'Search consultants...'
-      } else if (pathname.includes('/manage-cases')) {
-         return 'Search cases...'
-      } else if (pathname.includes('/quote-generation')) {
-         return 'Search quotes...'
-      } else if (pathname.includes('/manage-admins')) {
-         return 'Search admins...'
-      } else if (pathname.includes('/categories')) {
-         return 'Search categories...'
-      } else if (pathname.includes('/appointments')) {
-         return 'Search appointments...'
+      if (pathname.includes('/user-management')) {
+         return 'Search users...'
+      } else if (pathname.includes('/themes')) {
+         return 'Search themes...'
       } else {
-         return 'Search...' // Default fallback
+         return 'Search...'
       }
    }
 

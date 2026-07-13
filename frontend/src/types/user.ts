@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'staff' | 'superAdmin' | 'customer'
+export type UserRole = 'superAdmin' | 'admin' | 'developer'
 
 export interface User {
    _id: string
@@ -118,16 +118,10 @@ export const USER_ROLES: {
    description: string
 }[] = [
    {
-      value: 'customer',
-      label: 'Customer',
+      value: 'developer',
+      label: 'Developer',
       color: 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-400',
-      description: 'Regular customer account',
-   },
-   {
-      value: 'staff',
-      label: 'Staff',
-      color: 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-400',
-      description: 'Staff member with limited access',
+      description: 'Standard developer account',
    },
    {
       value: 'admin',

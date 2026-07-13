@@ -59,13 +59,13 @@ export function SignupPage({ onSuccess }: SignupPageProps) {
                         <IconNetwork className="h-8 w-8 text-white" />
                      </div>
                   </div>
-                  <h1 className="text-4xl font-bold mb-4">projectname</h1>
+                  <h1 className="text-4xl font-bold mb-4">App Template</h1>
                   <p className="text-xl text-white/90 max-w-md">
-                     Join Our Growing Network
+                     Create your account
                   </p>
                   <p className="text-lg text-white/80 mt-4 max-w-lg">
-                     Create your account and start accessing enterprise-grade 
-                     telecom services trusted by thousands of businesses worldwide.
+                     Sign up to explore auth, users, and themes in this Next.js +
+                     NestJS starter template.
                   </p>
                </div>
 
@@ -73,18 +73,18 @@ export function SignupPage({ onSuccess }: SignupPageProps) {
                <div className="grid grid-cols-1 gap-6 max-w-md">
                   <div className="text-center p-4 rounded-lg bg-white/10 backdrop-blur-sm">
                      <IconNetwork className="h-8 w-8 mx-auto mb-3 text-white" />
-                     <h3 className="text-lg font-semibold mb-2">Instant Access</h3>
-                     <p className="text-sm text-white/80">Get immediate access to our full suite of telecom services</p>
+                     <h3 className="text-lg font-semibold mb-2">Ready to extend</h3>
+                     <p className="text-sm text-white/80">Modular frontend and backend structure for new features</p>
                   </div>
                   <div className="text-center p-4 rounded-lg bg-white/10 backdrop-blur-sm">
                      <IconShield className="h-8 w-8 mx-auto mb-3 text-white" />
-                     <h3 className="text-lg font-semibold mb-2">Secure & Reliable</h3>
-                     <p className="text-sm text-white/80">Enterprise-grade security with 99.9% uptime guarantee</p>
+                     <h3 className="text-lg font-semibold mb-2">Secure by default</h3>
+                     <p className="text-sm text-white/80">JWT auth, role guards, validation, and helmet built in</p>
                   </div>
                   <div className="text-center p-4 rounded-lg bg-white/10 backdrop-blur-sm">
                      <IconCheck className="h-8 w-8 mx-auto mb-3 text-white" />
-                     <h3 className="text-lg font-semibold mb-2">24/7 Support</h3>
-                     <p className="text-sm text-white/80">Round-the-clock technical support from our specialists</p>
+                     <h3 className="text-lg font-semibold mb-2">Theme system</h3>
+                     <p className="text-sm text-white/80">Customize appearance with the included theme manager</p>
                   </div>
                </div>
             </div>
@@ -104,7 +104,7 @@ export function SignupPage({ onSuccess }: SignupPageProps) {
                      <IconNetwork className="h-6 w-6 text-white" />
                   </div>
                   <h1 className="theme-text-primary text-2xl font-bold mb-2">
-                     projectname
+                     App Template
                   </h1>
                   <p className="theme-text-secondary text-sm">
                      Professional Telecom Solutions

@@ -102,7 +102,7 @@ export function SignupForm({ onSuccess, className }: SignupFormProps) {
             name: values.name,
             email: values.email,
             password: values.password,
-            role: 'customer' as const,
+            // Backend defaults to developer when role is omitted
          }
 
          const result = await signup(signupData)

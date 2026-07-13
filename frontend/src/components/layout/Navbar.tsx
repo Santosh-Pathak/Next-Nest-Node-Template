@@ -99,8 +99,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Link href="/dashboard" className="flex items-center gap-3">
                <div className="flex items-center">
                   <img 
-                     src="/images/projectname-logo.svg" 
-                     alt="projectname Logo" 
+                     src="/images/logo.svg" 
+                     alt="App Logo" 
                      className="h-8 w-auto object-contain"
                   />
                </div>

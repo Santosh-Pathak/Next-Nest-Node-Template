@@ -99,7 +99,7 @@ export default function Loading() {
                className="text-center space-y-2"
             >
                <h2 className="text-2xl font-bold theme-text-primary">
-                  projectname
+                  App Template
                </h2>
                <p className="theme-text-secondary">
                   Loading your telecom experience...

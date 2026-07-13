@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
       remotePatterns: [
          {
             protocol: 'https',
-            hostname: 'stprojectnameprod.blob.core.windows.net',
+            // Replace with your Azure Blob Storage hostname, e.g. mystorage.blob.core.windows.net
+            hostname: '**.blob.core.windows.net',
             port: '',
             pathname: '/**',
          },

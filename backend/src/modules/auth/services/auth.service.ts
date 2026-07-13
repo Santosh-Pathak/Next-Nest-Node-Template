@@ -9,6 +9,7 @@ import { TokenService } from './token.service';
 import { OtpService } from './otp.service';
 import { UserDocument } from '../../users/schema/userSchema';
 import { TokenType } from '../schemas/token.schema';
+import { Role } from '@common/enums/role.enum';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -63,7 +64,7 @@ export class AuthService {
   /**
    * Signup new user
    */
-  async signup(signupData: { email: string; password: string; name: string; role?: string }) {
+  async signup(signupData: { email: string; password: string; name: string; role?: Role }) {
     const existingUser = await this.usersService.findByEmail(signupData.email);
 
     if (existingUser) {
@@ -89,7 +90,7 @@ export class AuthService {
   async registerUser(registerData: {
     name: string;
     email: string;
-    role?: string;
+    role?: Role;
     description?: string;
     isEmailVerified?: boolean;
   }) {

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to handle the "Invalid or expired token" error and other API errors in the projectname application.
+This guide explains how to handle the "Invalid or expired token" error and other API errors in the application.
 
 ## Common Error: "Invalid or expired token"
 

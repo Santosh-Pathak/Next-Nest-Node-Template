@@ -188,16 +188,12 @@ export const usePermissions = () => {
 
       switch (permission) {
          case 'view_dashboard':
-            return hasAnyRole(['customer', 'admin', 'superAdmin'])
-         case 'manage_leads':
-            return hasAnyRole(['admin', 'superAdmin'])
+            return hasAnyRole(['developer', 'admin', 'superAdmin'])
          case 'manage_users':
             return hasAnyRole(['admin', 'superAdmin'])
-         case 'manage_system':
-            return hasRole('superAdmin')
-         case 'view_analytics':
+         case 'manage_themes':
             return hasAnyRole(['admin', 'superAdmin'])
-         case 'manage_bank_partners':
+         case 'manage_system':
             return hasRole('superAdmin')
          default:
             return false
@@ -212,6 +208,6 @@ export const usePermissions = () => {
       userRole: user?.role,
       isAdmin: hasAnyRole(['admin', 'superAdmin']),
       isSuperAdmin: hasRole('superAdmin'),
-      isCustomer: hasRole('customer'),
+      isDeveloper: hasRole('developer'),
    }
 }

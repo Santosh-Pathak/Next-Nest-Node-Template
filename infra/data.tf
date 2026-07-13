@@ -4,7 +4,8 @@ locals {
 }
 
 module "storage_account" {
-  source               = "git::https://github.com/tdkglobal/common-infra.git//modules/storage"
+  # Replace with your shared Terraform module registry / repo
+  source               = "git::https://github.com/YOUR_ORG/common-infra.git//modules/storage"
   storage_account_name = local.storage_account_name
   resource_group_name  = module.rg.resource_group_name
   az_location          = var.az_location
@@ -12,7 +13,7 @@ module "storage_account" {
 }
 
 // module "cosmosdb" {
-//   source = "git::https://github.com/tdkglobal/common-infra.git//modules/cosmosdb"
+//   source = "git::https://github.com/YOUR_ORG/common-infra.git//modules/cosmosdb"
 
 //   resource_group_name = module.rg.resource_group_name
 //   az_location         = var.az_location

@@ -248,10 +248,10 @@ function handleDuplicateKeyError(message: string): string | null {
    if (!message.includes('E11000 duplicate key error')) return null
 
    if (message.includes('phone_1')) {
-      return 'A lead with this phone number already exists. Please use a different phone number.'
+      return 'A record with this phone number already exists. Please use a different phone number.'
    }
    if (message.includes('email_1')) {
-      return 'A lead with this email address already exists. Please use a different email address.'
+      return 'A record with this email address already exists. Please use a different email address.'
    }
    return 'This information already exists. Please check your input and try again.'
 }

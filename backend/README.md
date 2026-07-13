@@ -99,7 +99,7 @@ Edit `.env` file with your configuration:
 ```env
 NODE_ENV=development
 PORT=3000
-MONGODB_URI=mongodb://localhost:27017/mail-service
+MONGODB_URI=mongodb://localhost:27017/app
 JWT_SECRET=your-secret-key
 # ... other variables
 ```

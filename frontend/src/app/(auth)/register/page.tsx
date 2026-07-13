@@ -50,7 +50,7 @@ export default function RegisterPage() {
                   <IconNetwork className="h-6 w-6 text-white" />
                </div>
                <h1 className="theme-text-primary text-2xl font-bold mb-2">
-                  projectname
+                  App Template
                </h1>
                <p className="theme-text-secondary text-sm">
                   Professional Telecom Solutions

@@ -1,5 +1,6 @@
 module "vm" {
-  source = "git::https://github.com/tdkglobal/common-infra.git//modules/vm"
+  # Replace with your shared Terraform module registry / repo
+  source = "git::https://github.com/YOUR_ORG/common-infra.git//modules/vm"
 
   default_name        = "${var.project_name}-${var.az_env}"
   resource_group_name = module.rg.resource_group_name

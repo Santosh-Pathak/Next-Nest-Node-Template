@@ -39,7 +39,7 @@ const UserModel = mongoose.model(User.name, UserSchema);
 const connectDB = async (): Promise<void> => {
   try {
     const mongoUri =
-      process.env.MONGODB_URI || process.env.DATABASE || 'mongodb://localhost:27017/mail-service';
+      process.env.MONGODB_URI || process.env.DATABASE || 'mongodb://localhost:27017/app';
     await mongoose.connect(mongoUri);
     logger.info('✅ MongoDB connected successfully');
     logger.info(`🔗 Connected to: ${mongoUri.replace(/\/\/.*@/, '//***:***@')}`); // Hide credentials in logs
@@ -85,14 +85,14 @@ const getDefaultUser = async (): Promise<any> => {
 
       user = await UserModel.create({
         name: 'System Administrator',
-        email: 'admin@mail-service.com',
+        email: 'admin@example.com',
         password: hashedPassword,
         role: 'superAdmin',
         isEmailVerified: true,
         isActive: true,
       });
       logger.info('✅ Default superAdmin user created');
-      logger.info('   Email: admin@mail-service.com');
+      logger.info('   Email: admin@example.com');
       logger.info('   Password: Admin@123');
       logger.warn('   ⚠️  Please change this password after first login!');
     } else {
