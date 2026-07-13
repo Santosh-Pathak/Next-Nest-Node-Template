@@ -1,32 +1,54 @@
-import * as Joi from 'joi';
+import { z } from 'zod';
 
-export const validationSchema = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
-  PORT: Joi.number().default(3000),
-  API_PREFIX: Joi.string().default('api/v1'),
+/**
+ * Zod-validated process env for Nest ConfigModule.
+ * All env values arrive as strings — coerce numbers where needed.
+ */
+export const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  PORT: z.coerce.number().default(3000),
+  API_PREFIX: z.string().default('api'),
 
-  MONGODB_URI: Joi.string().required(),
-  MONGODB_URI_TEST: Joi.string().optional(),
+  MONGODB_URI: z.string().min(1, 'MONGODB_URI is required'),
+  MONGODB_URI_TEST: z.string().optional(),
 
-  JWT_SECRET: Joi.string().required(),
-  JWT_EXPIRES_IN: Joi.string().default('7d'),
-  JWT_REFRESH_SECRET: Joi.string().required(),
-  JWT_REFRESH_EXPIRES_IN: Joi.string().default('30d'),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
+  JWT_EXPIRES_IN: z.string().default('7d'),
+  JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET is required'),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
 
-  SMTP_HOST: Joi.string().optional(),
-  SMTP_PORT: Joi.number().default(587),
-  SMTP_USER: Joi.string().optional(),
-  SMTP_PASSWORD: Joi.string().optional(),
-  EMAIL_FROM: Joi.string().email().default('noreply@example.com'),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  EMAIL_FROM: z.string().email().default('noreply@example.com'),
 
-  DEFAULT_PAGE_SIZE: Joi.number().default(100),
-  MAX_PAGE_SIZE: Joi.number().default(1000),
+  DEFAULT_PAGE_SIZE: z.coerce.number().default(100),
+  MAX_PAGE_SIZE: z.coerce.number().default(1000),
 
-  CORS_ORIGIN: Joi.string().default('*'),
-  RATE_LIMIT_TTL: Joi.number().default(60),
-  RATE_LIMIT_MAX: Joi.number().default(100),
+  CORS_ORIGIN: z.string().default('*'),
+  RATE_LIMIT_TTL: z.coerce.number().default(60),
+  RATE_LIMIT_MAX: z.coerce.number().default(100),
 
-  LOG_LEVEL: Joi.string()
-    .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent')
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
     .default('info'),
+
+  SEED_ADMIN_EMAIL: z.string().email().optional(),
+  SEED_ADMIN_PASSWORD: z.string().optional(),
 });
+
+export type EnvConfig = z.infer<typeof envSchema>;
+
+export function validateEnv(config: Record<string, unknown>): EnvConfig {
+  const parsed = envSchema.safeParse(config);
+
+  if (!parsed.success) {
+    const details = parsed.error.issues
+      .map((issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`)
+      .join('\n');
+    throw new Error(`Environment validation failed:\n${details}`);
+  }
+
+  return parsed.data;
+}

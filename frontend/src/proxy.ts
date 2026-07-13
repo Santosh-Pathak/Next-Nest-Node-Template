@@ -15,6 +15,9 @@ const protectedRoutes = {
    '/themes': {
       requiredRoles: ['superAdmin', 'admin'] as UserRole[],
    },
+   '/items': {
+      requiredRoles: ['superAdmin', 'admin', 'developer'] as UserRole[],
+   },
 } as const
 
 const publicRoutes = [

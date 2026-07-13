@@ -1,0 +1,18 @@
+# Local development helpers (Mongo + Mailhog only)
+# Usage: docker compose -f docker-compose.dev.yml up -d
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data_dev:/data/db
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  mongo_data_dev:

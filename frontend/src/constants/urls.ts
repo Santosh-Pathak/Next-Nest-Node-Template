@@ -45,6 +45,13 @@ export const API_ENDPOINTS = {
       UPDATE_PROFILE: '/api/v1/auth/profile',
       CHANGE_PASSWORD: '/api/v1/auth/update-password',
    },
+   ITEMS: {
+      GET_ALL: '/api/v1/items',
+      CREATE: '/api/v1/items',
+      GET_BY_ID: '/api/v1/items/:id',
+      UPDATE: '/api/v1/items/:id',
+      DELETE: '/api/v1/items/:id',
+   },
 } as const
 
 export const ROUTES = {
@@ -62,10 +69,12 @@ export const ROUTES = {
    UNAUTHORIZED: '/unauthorized',
    USER_MANAGEMENT: '/user-management',
    THEME_MANAGEMENT: '/themes',
+   ITEMS: '/items',
 } as const
 
-export const BASE_URL =
-   process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'
+import { env } from '@/config/env'
+
+export const BASE_URL = env.NEXT_PUBLIC_API_BASE_URL
 
 export const CACHE_TIME = {
    SHORT: 1000 * 60 * 5,

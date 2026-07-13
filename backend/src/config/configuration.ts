@@ -1,7 +1,7 @@
 export default () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
-  apiPrefix: process.env.API_PREFIX || 'api/v1',
+  apiPrefix: process.env.API_PREFIX || 'api',
 
   database: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/app',
