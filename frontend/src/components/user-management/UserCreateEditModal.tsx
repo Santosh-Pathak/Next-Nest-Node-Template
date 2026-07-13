@@ -51,7 +51,7 @@ export default function UserCreateEditModal({
       phone: '',
       address: '',
       postalCode: '',
-      role: 'customer',
+      role: 'developer',
       active: true,
       isEmailVerified: false,
       description: ''
@@ -79,7 +79,7 @@ export default function UserCreateEditModal({
             phone: user.phone || '',
             address: user.address || '',
             postalCode: user.postalCode || '',
-            role: user.role || 'customer',
+            role: user.role || 'developer',
             active: user.active ?? true,
             isEmailVerified: user.isEmailVerified ?? false,
             description: '' // Users don't have description, only for create requests
@@ -93,7 +93,7 @@ export default function UserCreateEditModal({
             phone: '',
             address: '',
             postalCode: '',
-            role: 'customer',
+            role: 'developer',
             active: true,
             isEmailVerified: false,
             description: ''

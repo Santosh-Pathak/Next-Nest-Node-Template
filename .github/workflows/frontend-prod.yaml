@@ -11,8 +11,8 @@ env:
   HOST: ${{ vars.HOST_NAME_prod }}
   USERNAME: ${{ vars.USER_NAME_prod }}
   PORT: 22
-  NEXT_PUBLIC_API_URL: https://anywhere-anyhouse.tdkglobal.com/api
-  NEXT_PUBLIC_DOMAIN: anywhere-anyhouse.tdkglobal.com
+  NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+  NEXT_PUBLIC_DOMAIN: ${{ vars.NEXT_PUBLIC_DOMAIN }}
 
 jobs:
   Build:

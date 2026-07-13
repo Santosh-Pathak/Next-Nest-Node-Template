@@ -201,7 +201,7 @@ export interface AuthActions {
 export interface AuthStore extends AuthState, AuthActions {}
 
 // ==================== ROLE & PERMISSION TYPES ====================
-export type UserRole = 'superAdmin' | 'admin' | 'staff' | 'customer'
+export type UserRole = 'superAdmin' | 'admin' | 'developer'
 
 export interface Permission {
    id: string

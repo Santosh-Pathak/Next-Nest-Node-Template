@@ -60,13 +60,13 @@ export function LoginPage() {
                         <IconNetwork className="h-8 w-8 text-white" />
                      </div>
                   </div>
-                  <h1 className="text-4xl font-bold mb-4">projectname</h1>
+                  <h1 className="text-4xl font-bold mb-4">App Template</h1>
                   <p className="text-xl text-white/90 max-w-md">
-                     Connect Your Business Future
+                     Next.js + NestJS starter
                   </p>
                   <p className="text-lg text-white/80 mt-4 max-w-lg">
-                     The most advanced telecom platform for managing communications, 
-                     network services, and business connectivity.
+                     Auth, users, themes, and a production-ready API layout —
+                     ready to customize for your product.
                   </p>
                </div>
 
@@ -106,7 +106,7 @@ export function LoginPage() {
                      <IconNetwork className="h-6 w-6 text-white" />
                   </div>
                   <h1 className="theme-text-primary text-2xl font-bold mb-2">
-                     projectname
+                     App Template
                   </h1>
                   <p className="theme-text-secondary text-sm">
                      Professional Telecom Solutions

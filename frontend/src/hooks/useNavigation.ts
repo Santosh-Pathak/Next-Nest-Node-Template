@@ -59,7 +59,7 @@ export const useOptimizedNavigation = () => {
       userRole,
       isAdmin: userRole === 'admin' || userRole === 'superAdmin',
       isSuperAdmin: userRole === 'superAdmin',
-      isCustomer: userRole === 'customer',
+      isDeveloper: userRole === 'developer',
    }
 }
 

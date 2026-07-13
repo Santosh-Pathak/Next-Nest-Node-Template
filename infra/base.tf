@@ -1,5 +1,6 @@
 module "rg" {
-  source = "git::https://github.com/tdkglobal/common-infra.git//modules/rg"
+  # Replace with your shared Terraform module registry / repo
+  source = "git::https://github.com/YOUR_ORG/common-infra.git//modules/rg"
 
   project_name = var.project_name
   az_env       = var.az_env

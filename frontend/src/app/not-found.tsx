@@ -281,7 +281,7 @@ export default function NotFound() {
             className="absolute bottom-4 left-0 right-0 text-center"
          >
             <p className="text-sm theme-text-muted">
-               projectname &copy; {new Date().getFullYear()} | Building the Future of Telecom
+               App Template &copy; {new Date().getFullYear()}
             </p>
          </motion.div>
       </div>

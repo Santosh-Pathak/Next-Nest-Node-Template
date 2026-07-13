@@ -135,18 +135,12 @@ const DynamicCardList = <T,>({
          return searchPlaceholder
       }
 
-      if (pathname.includes('/lead-management')) {
-         return 'Search leads...'
-      } else if (pathname.includes('/manage-customers')) {
-         return 'Search customers...'
-      } else if (pathname.includes('/manage-consultants')) {
-         return 'Search consultants...'
-      } else if (pathname.includes('/manage-cases')) {
-         return 'Search cases...'
-      } else if (pathname.includes('/quote-generation')) {
-         return 'Search quotes...'
+      if (pathname.includes('/user-management')) {
+         return 'Search users...'
+      } else if (pathname.includes('/themes')) {
+         return 'Search themes...'
       } else {
-         return 'Search...' // Default fallback
+         return 'Search...'
       }
    }
 

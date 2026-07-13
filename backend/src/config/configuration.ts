@@ -4,8 +4,8 @@ export default () => ({
   apiPrefix: process.env.API_PREFIX || 'api/v1',
 
   database: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/mail-service',
-    uriTest: process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/mail-service-test',
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/app',
+    uriTest: process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/app-test',
   },
 
   jwt: {
@@ -35,6 +35,6 @@ export default () => ({
   },
 
   logging: {
-    level: process.env.LOG_LEVEL || 'debug',
+    level: process.env.LOG_LEVEL || 'info',
   },
 });

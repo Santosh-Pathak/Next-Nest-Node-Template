@@ -3,7 +3,6 @@
  */
 export const API_ENDPOINTS = {
    AUTH: {
-      // Public auth endpoints
       SIGNUP: '/api/v1/auth/signup',
       LOGIN: '/api/v1/auth/login',
       LOGOUT: '/api/v1/auth/logout',
@@ -12,34 +11,16 @@ export const API_ENDPOINTS = {
       FORGET_PASSWORD: '/api/v1/auth/forget-password',
       VERIFY_OTP: '/api/v1/auth/verify-otp',
       RESET_PASSWORD: '/api/v1/auth/reset-password',
-
-      // Token management - Backend only has /refresh endpoint
       REFRESH: '/api/v1/auth/refresh',
-
-      // Protected profile endpoints
       PROFILE: '/api/v1/auth/profile',
       UPDATE_PROFILE: '/api/v1/auth/profile',
       UPDATE_PASSWORD: '/api/v1/auth/update-password',
       DELETE_ACCOUNT: '/api/v1/auth/delete-account',
-
-      // Admin endpoints
       REGISTER_USER: '/api/v1/auth/register-user',
       GET_USERS: '/api/v1/users',
       UPLOAD_FILE: '/api/v1/file/azure-upload',
    },
-   LEAD: {
-      // Lead management endpoints
-      GET_ALL: '/api/v1/lead',
-      CREATE: '/api/v1/lead',
-      GET_BY_ID: '/api/v1/lead/:id',
-      UPDATE: '/api/v1/lead/:id',
-      DELETE: '/api/v1/lead/:id',
-      BULK_IMPORT: '/api/v1/lead/bulk-lead-register',
-      BULK_VALIDATE: '/api/v1/lead/bulk-lead-validate',
-      DOWNLOAD_TEMPLATE: '/api/v1/lead/bulk-lead-template',
-   },
    THEME: {
-      // Theme management endpoints
       GET_ALL: '/api/v1/theme',
       CREATE: '/api/v1/theme',
       GET_BY_ID: '/api/v1/theme/:id',
@@ -55,14 +36,11 @@ export const API_ENDPOINTS = {
       ACTIVATE: '/api/v1/theme/:id/activate',
    },
    USER: {
-      // User management endpoints (admin)
       GET_ALL: '/api/v1/users',
       CREATE: '/api/v1/users',
       GET_BY_ID: '/api/v1/users/:id',
       UPDATE: '/api/v1/users/:id',
       DELETE: '/api/v1/users/:id',
-
-      // Auth-related user endpoints
       PROFILE: '/api/v1/auth/profile',
       UPDATE_PROFILE: '/api/v1/auth/profile',
       CHANGE_PASSWORD: '/api/v1/auth/update-password',
@@ -80,30 +58,19 @@ export const ROUTES = {
    PROFILE: '/profile',
    FORGOT_PASSWORD: '/forgot-password',
    RESET_PASSWORD: '/reset-password',
-   TWO_FACTOR_AUTH: '/two-factor-authentication',
    ACCESS_DENIED: '/access-denied',
    UNAUTHORIZED: '/unauthorized',
-
-   // CRM Routes - Updated for current system
-   LEAD_MANAGEMENT: '/lead-management',
-   NEW_LEAD: '/lead-management/new',
-   LEAD_BULK_IMPORT: '/lead-management/bulk-import',
-   QUOTATIONS: '/quotations',
-   PURCHASE_ORDERS: '/purchase-orders',
-   REPORTS: '/reports',
-   ANALYTICS: '/analytics',
    USER_MANAGEMENT: '/user-management',
    THEME_MANAGEMENT: '/themes',
-   SETTINGS: '/settings',
 } as const
 
 export const BASE_URL =
    process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'
 
 export const CACHE_TIME = {
-   SHORT: 1000 * 60 * 5, // 5 minutes
-   MEDIUM: 1000 * 60 * 15, // 15 minutes
-   LONG: 1000 * 60 * 60, // 1 hour
+   SHORT: 1000 * 60 * 5,
+   MEDIUM: 1000 * 60 * 15,
+   LONG: 1000 * 60 * 60,
 } as const
 
 export const STORAGE_KEYS = {
@@ -118,47 +85,14 @@ export const STORAGE_KEYS = {
 export const ROLES = {
    SUPER_ADMIN: 'superAdmin',
    ADMIN: 'admin',
-   CUSTOMER: 'customer',
-   USER: 'customer', // default user role
+   DEVELOPER: 'developer',
 } as const
 
 export const PERMISSIONS = {
-   // User permissions
    VIEW_PROFILE: 'view:profile',
    EDIT_PROFILE: 'edit:profile',
    DELETE_ACCOUNT: 'delete:account',
-
-   // Lead management permissions according to FRD
-   VIEW_LEADS: 'view:leads',
-   CREATE_LEADS: 'create:leads',
-   EDIT_LEADS: 'edit:leads',
-   DELETE_LEADS: 'delete:leads',
-   BULK_IMPORT_LEADS: 'bulk:leads',
-   CONVERT_LEADS: 'convert:leads',
-
-   // Quotation management permissions
-   VIEW_QUOTATIONS: 'view:quotations',
-   CREATE_QUOTATIONS: 'create:quotations',
-   EDIT_QUOTATIONS: 'edit:quotations',
-   DELETE_QUOTATIONS: 'delete:quotations',
-   APPROVE_QUOTATIONS: 'approve:quotations',
-   EXPORT_QUOTATIONS: 'export:quotations',
-
-   // Purchase Order management permissions
-   VIEW_PURCHASE_ORDERS: 'view:purchase_orders',
-   CREATE_PURCHASE_ORDERS: 'create:purchase_orders',
-   EDIT_PURCHASE_ORDERS: 'edit:purchase_orders',
-   DELETE_PURCHASE_ORDERS: 'delete:purchase_orders',
-   APPROVE_PURCHASE_ORDERS: 'approve:purchase_orders',
-   EXPORT_PURCHASE_ORDERS: 'export:purchase_orders',
-
-   // Admin permissions
    MANAGE_USERS: 'manage:users',
-   VIEW_ANALYTICS: 'view:analytics',
-   SYSTEM_CONFIG: 'system:config',
-   GENERATE_REPORTS: 'generate:reports',
-
-   // Theme management permissions
    VIEW_THEMES: 'view:themes',
    CREATE_THEMES: 'create:themes',
    EDIT_THEMES: 'edit:themes',

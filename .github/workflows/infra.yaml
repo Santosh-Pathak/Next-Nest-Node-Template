@@ -27,9 +27,10 @@ jobs:
     - name: 'Authenticate to Azure'
       uses: azure/login@v1
       with:
-        client-id: 282f4bbe-1b10-49f9-976f-dbe46748f97c
-        subscription-id: 40bbb825-f4ca-4762-8e52-4962cc1298d5
-        tenant-id: deepakkesharitdkglobalco.onmicrosoft.com
+        # Replace with your Azure AD app registration (OIDC federated credentials)
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
     - uses: hashicorp/setup-terraform@v3
       name: setup-terraform

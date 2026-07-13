@@ -527,7 +527,7 @@ export class UserAPI {
    static readonly preloadUserData = async (filters: UserFilters = {}) => {
       // Pre-load common data combinations
       const commonFilters: UserFilters[] = [
-         { ...filters, role: 'customer' },
+         { ...filters, role: 'developer' },
          { ...filters, role: 'admin' },
          { ...filters, active: true },
          { ...filters, isEmailVerified: true },
@@ -563,13 +563,9 @@ export { userCache }
 
 // User configuration constants
 export const userRoleConfig = {
-   customer: {
-      label: 'Customer',
+   developer: {
+      label: 'Developer',
       color: 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-400',
-   },
-   staff: {
-      label: 'Staff',
-      color: 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-400',
    },
    admin: {
       label: 'Admin',

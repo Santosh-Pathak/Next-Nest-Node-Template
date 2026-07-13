@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
+import { TrendingUp, Users, Activity, Palette } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/auth.store'
@@ -11,192 +12,89 @@ import { cn } from '@/lib/theme-utils'
 
 export default function DashboardPage() {
    const { user } = useAuthStore()
-   // Theme context available for future enhancements
    useTheme()
 
-   // Dynamic stats based on user role - Updated for CRM system
-   const getStatsForRole = (userRole: string) => {
-      // CRM Lead-to-Purchase Order stats for Admin/SuperAdmin
-      if (userRole === 'admin' || userRole === 'superAdmin') {
-         return [
-            {
-               title: 'Total Leads',
-               value: '2,456',
-               icon: Users,
-               change: '+12.5%',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Qualified Leads',
-               value: '892',
-               icon: TrendingUp,
-               change: '+8.2%',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Quotes Generated',
-               value: '234',
-               icon: Activity,
-               change: '+15.3%',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Purchase Orders',
-               value: '145',
-               icon: DollarSign,
-               change: '+5.7%',
-               changeType: 'positive' as const,
-            },
-         ]
-      }
+   const isAdmin = user?.role === 'admin' || user?.role === 'superAdmin'
 
-      // Customer stats
-      if (userRole === 'customer') {
-         return [
-            {
-               title: 'My Inquiries',
-               value: '5',
-               icon: Activity,
-               change: '+2',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Active Quotes',
-               value: '3',
-               icon: TrendingUp,
-               change: '+1',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Total Orders',
-               value: '8',
-               icon: DollarSign,
-               change: '+2',
-               changeType: 'positive' as const,
-            },
-            {
-               title: 'Order Value',
-               value: '₹2.5L',
-               icon: Users,
-               change: '+₹0.8L',
-               changeType: 'positive' as const,
-            },
-         ]
-      }
+   const stats = [
+      {
+         title: 'Your Role',
+         value: user?.role || '—',
+         icon: Users,
+         change: 'Active session',
+         changeType: 'positive' as const,
+      },
+      {
+         title: 'Account Status',
+         value: user?.isActive === false ? 'Inactive' : 'Active',
+         icon: Activity,
+         change: user?.isEmailVerified ? 'Email verified' : 'Verify email',
+         changeType: 'positive' as const,
+      },
+      {
+         title: 'Themes',
+         value: 'Ready',
+         icon: Palette,
+         change: 'Customize appearance',
+         changeType: 'positive' as const,
+      },
+      {
+         title: 'Template',
+         value: 'v1',
+         icon: TrendingUp,
+         change: 'Next + Nest starter',
+         changeType: 'positive' as const,
+      },
+   ]
 
-      // Default stats
-      return [
-         {
-            title: 'Total Users',
-            value: '1,234',
-            icon: Users,
-            change: '+5.2%',
-            changeType: 'positive' as const,
-         },
-         {
-            title: 'Active Projects',
-            value: '89',
-            icon: Activity,
-            change: '+12.5%',
-            changeType: 'positive' as const,
-         },
-         {
-            title: 'Revenue',
-            value: '₹45.2L',
-            icon: DollarSign,
-            change: '+8.7%',
-            changeType: 'positive' as const,
-         },
-         {
-            title: 'Growth Rate',
-            value: '15.3%',
-            icon: TrendingUp,
-            change: '+2.1%',
-            changeType: 'positive' as const,
-         },
-      ]
-   }
-
-   const stats = getStatsForRole(user?.role || 'customer')
-
-   // Dynamic welcome message based on role
-   const getWelcomeMessage = (userRole: string) => {
-      switch (userRole) {
+   const welcomeMessage = (() => {
+      switch (user?.role) {
          case 'superAdmin':
-            return 'Welcome to your Super Admin Control Center'
+            return 'Welcome to your Super Admin dashboard'
          case 'admin':
-            return 'Welcome to your CRM Management Dashboard'
-         case 'customer':
-            return 'Welcome to your Customer Portal'
+            return 'Welcome to your Admin dashboard'
+         case 'developer':
+            return 'Welcome to your Developer dashboard'
          default:
             return 'Welcome to your Dashboard'
       }
-   }
+   })()
 
-   // Dynamic quick actions based on role
-   const getQuickActionsForRole = (userRole: string) => {
-      // CRM quick actions for Admin/SuperAdmin
-      if (userRole === 'admin' || userRole === 'superAdmin') {
-         return [
-            { title: 'Create Lead', color: 'bg-[var(--interactive-primary)]', href: '/lead-management/new' },
-            { title: 'Manage Leads', color: 'bg-[var(--success-500)]', href: '/lead-management' },
-            { title: 'Generate Quote', color: 'bg-[var(--warning-500)]', href: '/quotations/new' },
-            { title: 'View Reports', color: 'bg-[var(--info-500)]', href: '/reports' },
-         ]
-      }
-
-      // Customer quick actions
-      if (userRole === 'customer') {
-         return [
-            {
-               title: 'Submit Inquiry',
-               color: 'bg-[var(--interactive-primary)]',
-               href: '/inquiries/new'
-            },
-            { 
-               title: 'View Quotes', 
-               color: 'bg-[var(--success-500)]',
-               href: '/quotations'
-            },
-            { 
-               title: 'Track Orders', 
-               color: 'bg-[var(--warning-500)]',
-               href: '/orders'
-            },
-            { 
-               title: 'Contact Support', 
-               color: 'bg-[var(--info-500)]',
-               href: '/support'
-            },
-         ]
-      }
-
-      // Default actions
-      return [
-         {
-            title: 'New Project',
-            color: 'bg-[var(--interactive-primary)]',
-            href: '/projects/new'
-         },
-         { 
-            title: 'View Reports', 
-            color: 'bg-[var(--success-500)]',
-            href: '/reports'
-         },
-         { 
-            title: 'Manage Users', 
-            color: 'bg-[var(--warning-500)]',
-            href: '/user-management'
-         },
-         { 
-            title: 'System Settings', 
-            color: 'bg-[var(--info-500)]',
-            href: '/settings'
-         },
-      ]
-   }
-
-   const quickActions = getQuickActionsForRole(user?.role || 'customer')
+   const quickActions = isAdmin
+      ? [
+           {
+              title: 'Manage Users',
+              color: 'bg-[var(--interactive-primary)]',
+              href: '/user-management',
+           },
+           {
+              title: 'Themes',
+              color: 'bg-[var(--success-500)]',
+              href: '/themes',
+           },
+           {
+              title: 'Profile',
+              color: 'bg-[var(--warning-500)]',
+              href: '/profile',
+           },
+           {
+              title: 'Dashboard',
+              color: 'bg-[var(--info-500)]',
+              href: '/dashboard',
+           },
+        ]
+      : [
+           {
+              title: 'Profile',
+              color: 'bg-[var(--interactive-primary)]',
+              href: '/profile',
+           },
+           {
+              title: 'Dashboard',
+              color: 'bg-[var(--success-500)]',
+              href: '/dashboard',
+           },
+        ]
 
    return (
       <motion.div
@@ -205,7 +103,6 @@ export default function DashboardPage() {
          transition={{ duration: 0.5 }}
          className="space-y-6"
       >
-         {/* Welcome Section */}
          <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -218,17 +115,17 @@ export default function DashboardPage() {
          >
             <div className="relative z-10">
                <h1 className="theme-text-primary mb-2 text-3xl font-bold">
-                  {getWelcomeMessage(user?.role || 'customer')} 👋
+                  {welcomeMessage}
                </h1>
                <p className="theme-text-secondary text-lg">
-                  Welcome back, {user?.name || 'User'}! Here&apos;s your
-                  personalized overview.
+                  Welcome back, {user?.name || 'User'}. This is the starter
+                  dashboard — replace these placeholders with your product
+                  metrics.
                </p>
             </div>
             <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/5 to-transparent" />
          </motion.div>
 
-         {/* Stats Grid */}
          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -252,19 +149,12 @@ export default function DashboardPage() {
                            <Icon className="theme-text-muted h-4 w-4" />
                         </CardHeader>
                         <CardContent>
-                           <div className="theme-text-primary mb-1 text-2xl font-bold">
+                           <div className="theme-text-primary mb-1 text-2xl font-bold capitalize">
                               {stat.value}
                            </div>
-                           <p
-                              className={cn(
-                                 'flex items-center text-xs',
-                                 stat.changeType === 'positive'
-                                    ? 'text-[var(--success-500)]'
-                                    : 'text-[var(--error-500)]'
-                              )}
-                           >
+                           <p className="text-[var(--success-500)] flex items-center text-xs">
                               <TrendingUp className="mr-1 h-3 w-3" />
-                              {stat.change} from last month
+                              {stat.change}
                            </p>
                         </CardContent>
                      </Card>
@@ -273,133 +163,27 @@ export default function DashboardPage() {
             })}
          </motion.div>
 
-         {/* Quick Actions */}
          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="grid grid-cols-1 gap-6 lg:grid-cols-2"
          >
-            {/* Lead Management Section for Admin/SuperAdmin */}
-            {(user?.role === 'admin' || user?.role === 'superAdmin') && (
-               <Card className="theme-bg-primary theme-border">
-                  <CardHeader>
-                     <CardTitle className="theme-text-primary">
-                        Recent Leads
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="space-y-4">
-                        {[
-                           { id: '1', name: 'John Doe Company', status: 'new', source: 'Website' },
-                           { id: '2', name: 'TechCorp Solutions', status: 'qualified', source: 'Referral' },
-                           { id: '3', name: 'Global Industries', status: 'sendQuote', source: 'Social Media' },
-                        ].map((lead) => (
-                           <div
-                              key={lead.id}
-                              className="theme-bg-secondary flex items-center justify-between rounded-lg p-3"
-                           >
-                              <div>
-                                 <p className="theme-text-primary font-medium">
-                                    {lead.name}
-                                 </p>
-                                 <p className="theme-text-muted text-sm">
-                                    Source: {lead.source}
-                                 </p>
-                              </div>
-                              <div className={cn(
-                                 'rounded-full px-2 py-1 text-xs text-white',
-                                 lead.status === 'new' && 'bg-blue-500',
-                                 lead.status === 'qualified' && 'bg-green-500',
-                                 lead.status === 'sendQuote' && 'bg-orange-500'
-                              )}>
-                                 {lead.status === 'new' && 'New'}
-                                 {lead.status === 'qualified' && 'Qualified'}
-                                 {lead.status === 'sendQuote' && 'Quote Sent'}
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </CardContent>
-               </Card>
-            )}
-
-            {/* Default Recent Inquiries for customer */}
-            {user?.role === 'customer' && (
-               <Card className="theme-bg-primary theme-border">
-                  <CardHeader>
-                     <CardTitle className="theme-text-primary">
-                        Recent Inquiries
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="space-y-4">
-                        {[
-                           { id: '1', title: 'Office Equipment Quote', status: 'pending', date: '2 hours ago' },
-                           { id: '2', title: 'Software License Request', status: 'quoted', date: '1 day ago' },
-                           { id: '3', title: 'Hardware Procurement', status: 'completed', date: '3 days ago' },
-                        ].map((inquiry) => (
-                           <div
-                              key={inquiry.id}
-                              className="theme-bg-secondary flex items-center justify-between rounded-lg p-3"
-                           >
-                              <div>
-                                 <p className="theme-text-primary font-medium">
-                                    {inquiry.title}
-                                 </p>
-                                 <p className="theme-text-muted text-sm">
-                                    Submitted {inquiry.date}
-                                 </p>
-                              </div>
-                              <div className={cn(
-                                 'rounded-full px-2 py-1 text-xs text-white',
-                                 inquiry.status === 'pending' && 'bg-orange-500',
-                                 inquiry.status === 'quoted' && 'bg-blue-500',
-                                 inquiry.status === 'completed' && 'bg-green-500'
-                              )}>
-                                 {inquiry.status === 'pending' && 'Pending'}
-                                 {inquiry.status === 'quoted' && 'Quoted'}
-                                 {inquiry.status === 'completed' && 'Completed'}
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </CardContent>
-               </Card>
-            )}
-
-            {/* Default section for other roles */}
-            {!(user?.role === 'admin' || user?.role === 'superAdmin' || user?.role === 'customer') && (
-               <Card className="theme-bg-primary theme-border">
-                  <CardHeader>
-                     <CardTitle className="theme-text-primary">
-                        Recent Activity
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="space-y-4">
-                        {[1, 2, 3].map((item) => (
-                           <div
-                              key={item}
-                              className="theme-bg-secondary flex items-center justify-between rounded-lg p-3"
-                           >
-                              <div>
-                                 <p className="theme-text-primary font-medium">
-                                    Activity #{item}234
-                                 </p>
-                                 <p className="theme-text-muted text-sm">
-                                    Updated 2 hours ago
-                                 </p>
-                              </div>
-                              <div className="rounded-full bg-[var(--warning-500)] px-2 py-1 text-xs text-white">
-                                 Active
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </CardContent>
-               </Card>
-            )}
+            <Card className="theme-bg-primary theme-border">
+               <CardHeader>
+                  <CardTitle className="theme-text-primary">
+                     Getting started
+                  </CardTitle>
+               </CardHeader>
+               <CardContent>
+                  <ul className="theme-text-secondary space-y-3 text-sm">
+                     <li>1. Configure env vars for frontend and backend</li>
+                     <li>2. Create an admin user and explore User Management</li>
+                     <li>3. Customize themes under Theme Management</li>
+                     <li>4. Replace this dashboard with your product UI</li>
+                  </ul>
+               </CardContent>
+            </Card>
 
             <Card className="theme-bg-primary theme-border">
                <CardHeader>
@@ -409,106 +193,23 @@ export default function DashboardPage() {
                </CardHeader>
                <CardContent>
                   <div className="grid grid-cols-2 gap-4">
-                     {quickActions.map((action: any) => (
-                        <button
+                     {quickActions.map((action) => (
+                        <Link
                            key={action.title}
+                           href={action.href}
                            className={cn(
-                              'rounded-lg p-4 text-sm font-medium text-white',
+                              'rounded-lg p-4 text-center text-sm font-medium text-white',
                               'transition-transform hover:scale-105',
                               action.color
                            )}
-                           onClick={() => {
-                              if (action.href) {
-                                 // Navigate to the specified route
-                                 window.location.href = action.href
-                              }
-                           }}
                         >
                            {action.title}
-                        </button>
+                        </Link>
                      ))}
                   </div>
                </CardContent>
             </Card>
          </motion.div>
-
-         {/* Lead Management Workflow for Admin/SuperAdmin */}
-         {(user?.role === 'admin' || user?.role === 'superAdmin') && (
-            <motion.div
-               initial={{ y: 20, opacity: 0 }}
-               animate={{ y: 0, opacity: 1 }}
-               transition={{ duration: 0.5, delay: 0.4 }}
-               className="space-y-6"
-            >
-               <Card className="theme-bg-primary theme-border">
-                  <CardHeader>
-                     <CardTitle className="theme-text-primary">
-                        Lead to Purchase Order Workflow
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {/* Lead Management */}
-                        <div className="space-y-4">
-                           <h3 className="theme-text-primary text-lg font-semibold">Lead Management</h3>
-                           <div className="space-y-2">
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">New Leads</p>
-                                 <p className="theme-text-muted text-sm">34 leads this week</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Qualified Leads</p>
-                                 <p className="theme-text-muted text-sm">23 ready for quotes</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Converted Leads</p>
-                                 <p className="theme-text-muted text-sm">12 won this month</p>
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* Quotation Management */}
-                        <div className="space-y-4">
-                           <h3 className="theme-text-primary text-lg font-semibold">Quotations</h3>
-                           <div className="space-y-2">
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Draft Quotes</p>
-                                 <p className="theme-text-muted text-sm">8 pending approval</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Sent Quotes</p>
-                                 <p className="theme-text-muted text-sm">15 awaiting response</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Accepted Quotes</p>
-                                 <p className="theme-text-muted text-sm">7 ready for PO</p>
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* Purchase Orders */}
-                        <div className="space-y-4">
-                           <h3 className="theme-text-primary text-lg font-semibold">Purchase Orders</h3>
-                           <div className="space-y-2">
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Draft POs</p>
-                                 <p className="theme-text-muted text-sm">3 awaiting approval</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Approved POs</p>
-                                 <p className="theme-text-muted text-sm">12 in progress</p>
-                              </div>
-                              <div className="theme-bg-secondary rounded-lg p-3">
-                                 <p className="theme-text-primary font-medium">Completed POs</p>
-                                 <p className="theme-text-muted text-sm">28 this quarter</p>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </CardContent>
-               </Card>
-            </motion.div>
-         )}
       </motion.div>
    )
 }
