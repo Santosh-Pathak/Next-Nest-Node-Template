@@ -63,35 +63,40 @@ export default function DashboardPage() {
    const quickActions = isAdmin
       ? [
            {
-              title: 'Manage Users',
+              title: 'Items (CRUD)',
               color: 'bg-[var(--interactive-primary)]',
+              href: '/items',
+           },
+           {
+              title: 'Manage Users',
+              color: 'bg-[var(--success-500)]',
               href: '/user-management',
            },
            {
               title: 'Themes',
-              color: 'bg-[var(--success-500)]',
+              color: 'bg-[var(--warning-500)]',
               href: '/themes',
            },
            {
               title: 'Profile',
-              color: 'bg-[var(--warning-500)]',
-              href: '/profile',
-           },
-           {
-              title: 'Dashboard',
               color: 'bg-[var(--info-500)]',
-              href: '/dashboard',
+              href: '/profile',
            },
         ]
       : [
            {
-              title: 'Profile',
+              title: 'Items (CRUD)',
               color: 'bg-[var(--interactive-primary)]',
+              href: '/items',
+           },
+           {
+              title: 'Profile',
+              color: 'bg-[var(--success-500)]',
               href: '/profile',
            },
            {
               title: 'Dashboard',
-              color: 'bg-[var(--success-500)]',
+              color: 'bg-[var(--warning-500)]',
               href: '/dashboard',
            },
         ]

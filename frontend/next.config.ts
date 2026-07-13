@@ -1,19 +1,15 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-   /* config options here */
+   output: 'standalone',
    typescript: {
-      // !! WARN !!
-      // Dangerously allow production builds to successfully complete even if
-      // your project has type errors.
-      // !! WARN !!
-      ignoreBuildErrors: true,
+      // Prefer fixing types; keep false in CI once the codebase is clean.
+      ignoreBuildErrors: process.env.CI === 'true' ? false : true,
    },
    images: {
       remotePatterns: [
          {
             protocol: 'https',
-            // Replace with your Azure Blob Storage hostname, e.g. mystorage.blob.core.windows.net
             hostname: '**.blob.core.windows.net',
             port: '',
             pathname: '/**',

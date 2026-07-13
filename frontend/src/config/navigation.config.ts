@@ -9,6 +9,7 @@ import {
    IconUsers,
    IconPalette,
    IconUser,
+   IconBox,
 } from '@tabler/icons-react'
 import type { UserRole } from '@/types/auth'
 
@@ -50,6 +51,17 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
       permissions: ['view_dashboard'],
       trackingId: 'nav_dashboard',
       category: 'overview',
+   },
+   {
+      id: 'items',
+      name: 'Items',
+      href: '/items',
+      icon: IconBox,
+      roles: ['developer', 'admin', 'superAdmin'],
+      permissions: ['manage_items'],
+      trackingId: 'nav_items',
+      category: 'examples',
+      description: 'Example CRUD module to copy for new features',
    },
    {
       id: 'user-management',
@@ -95,6 +107,7 @@ export const NAVIGATION_SECTIONS: NavigationSection[] = [
 
 export const PERMISSION_MAPPINGS = {
    view_dashboard: ['developer', 'admin', 'superAdmin'],
+   manage_items: ['developer', 'admin', 'superAdmin'],
    manage_users: ['admin', 'superAdmin'],
    view_users: ['admin', 'superAdmin'],
    create_users: ['admin', 'superAdmin'],
