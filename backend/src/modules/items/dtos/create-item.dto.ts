@@ -1,22 +1,11 @@
-import { IsString, IsOptional, IsEnum, MaxLength, MinLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
+import { createZodDto } from '@common/pipes/create-zod-dto';
 import { ItemStatus } from '../schema/item.schema';
 
-export class CreateItemDto {
-  @ApiProperty({ example: 'Sample item' })
-  @IsString()
-  @MinLength(2)
-  @MaxLength(200)
-  title: string;
+export const createItemSchema = z.object({
+  title: z.string().min(2).max(200),
+  description: z.string().max(2000).optional(),
+  status: z.nativeEnum(ItemStatus).optional(),
+});
 
-  @ApiPropertyOptional({ example: 'Optional description for this item' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(2000)
-  description?: string;
-
-  @ApiPropertyOptional({ enum: ItemStatus, example: ItemStatus.DRAFT })
-  @IsOptional()
-  @IsEnum(ItemStatus)
-  status?: ItemStatus;
-}
+export class CreateItemDto extends createZodDto(createItemSchema) {}

@@ -4,7 +4,7 @@ import {
   MiddlewareConsumer,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { randomUUID } from 'crypto';
@@ -25,14 +25,15 @@ import {
   REQUEST_ID_HEADER,
 } from './common/middleware/request-id.middleware';
 import configuration from './config/configuration';
-import { validationSchema } from './config/validation';
+import { validateEnv } from './config/validation';
+import { ZodValidationPipe } from './common/pipes/zod-validation.pipe';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      validationSchema,
+      validate: validateEnv,
       envFilePath: ['.env.local', '.env'],
     }),
     LoggerModule.forRootAsync({
@@ -110,6 +111,10 @@ import { validationSchema } from './config/validation';
     {
       provide: APP_GUARD,
       useClass: AuthorizationGuard,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
     },
   ],
 })

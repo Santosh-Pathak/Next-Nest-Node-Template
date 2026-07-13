@@ -70,7 +70,10 @@ docker compose up --build
 | Health | Terminus liveness + Mongo readiness |
 | Example CRUD | `Items` module (BE + FE `/items`) — copy this pattern |
 | Seed | `npm run seed` / `npm run seed -- --reset` |
+| Validation | Zod env (`validateEnv`) + `ZodValidationPipe` / `createZodDto` (auth + items); class-validator elsewhere |
 | FE env | Zod-validated `src/config/env.ts` |
+| FE tests | Vitest + Testing Library (`npm test` in frontend) |
+| BE tests | Jest (`npm test` in backend) |
 
 ## Copying a new feature
 

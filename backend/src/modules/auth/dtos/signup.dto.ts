@@ -1,23 +1,12 @@
-import { IsString, IsEmail, MinLength, IsOptional, IsEnum } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
+import { createZodDto } from '@common/pipes/create-zod-dto';
 import { Role } from '@common/enums/role.enum';
 
-export class SignupDto {
-  @ApiProperty({ example: 'John Doe' })
-  @IsString()
-  name: string;
+export const signupSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(8),
+  role: z.nativeEnum(Role).optional(),
+});
 
-  @ApiProperty({ example: 'john@example.com' })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ example: 'password123', minLength: 8 })
-  @IsString()
-  @MinLength(8)
-  password: string;
-
-  @ApiPropertyOptional({ example: Role.DEVELOPER, enum: Role })
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
-}
+export class SignupDto extends createZodDto(signupSchema) {}

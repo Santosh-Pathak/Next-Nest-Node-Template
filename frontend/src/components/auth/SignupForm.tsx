@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAuthStore } from '@/store/auth.store'
+import { AuthService } from '@/services/apis/auth.service'
 import { ROUTES } from '@/constants/urls'
 import { cn } from '@/lib/theme-utils'
 import { showErrorToast } from '@/utils/error'
@@ -68,7 +69,6 @@ export function SignupForm({ onSuccess, className }: SignupFormProps) {
    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
    
    // Zustand store hooks
-   const signup = useAuthStore((state) => state.signup)
    const isLoading = useAuthStore((state) => state.isLoading)
    const error = useAuthStore((state) => state.error)
    const clearError = useAuthStore((state) => state.clearError)
@@ -105,7 +105,7 @@ export function SignupForm({ onSuccess, className }: SignupFormProps) {
             // Backend defaults to developer when role is omitted
          }
 
-         const result = await signup(signupData)
+         await AuthService.signup(signupData)
 
          // Signup successful
          if (onSuccess) {
