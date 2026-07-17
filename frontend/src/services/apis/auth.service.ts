@@ -197,18 +197,24 @@ export class AuthService {
    }
 
    /**
-    * Verify OTP for password reset
+    * Verify OTP for password reset — returns one-time resetToken
     */
-   static async verifyOTP(data: VerifyOTPRequest): Promise<void> {
+   static async verifyOTP(
+      data: VerifyOTPRequest
+   ): Promise<{ resetToken?: string }> {
       const { setLoading, setError } = useAuthStore.getState()
 
       try {
          setLoading(true)
          setError(null)
 
-         await httpService.post(API_ENDPOINTS.AUTH.VERIFY_OTP, data)
+         const result = await httpService.post<{ resetToken: string }>(
+            API_ENDPOINTS.AUTH.VERIFY_OTP,
+            data
+         )
 
          toast.success('OTP verified successfully!')
+         return result || {}
       } catch (error: any) {
          const errorMessage = error.message || 'OTP verification failed'
          setError(errorMessage)

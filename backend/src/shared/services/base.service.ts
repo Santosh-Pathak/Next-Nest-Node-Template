@@ -3,13 +3,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { APIFeatures } from '@shared/utils/api-features';
 import { FactoryService } from './factory.service';
 
+/**
+ * Template Method: shared CRUD for feature services.
+ * DIP: FactoryService is injected (never constructed with `new`).
+ */
 @Injectable()
 export abstract class BaseService<T extends Document> {
-  protected factoryService: FactoryService;
-
-  constructor(protected readonly model: Model<T>) {
-    this.factoryService = new FactoryService();
-  }
+  constructor(
+    protected readonly model: Model<T>,
+    protected readonly factoryService: FactoryService,
+  ) {}
 
   // Using any for createDto to allow flexibility in derived services
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +22,7 @@ export abstract class BaseService<T extends Document> {
   }
 
   async findById(id: string, popOptions?: PopulateOptions | PopulateOptions[]): Promise<T> {
-    const options: any = {};
+    const options: Record<string, unknown> = {};
 
     if (popOptions) {
       options.populate = popOptions;
@@ -49,7 +52,7 @@ export abstract class BaseService<T extends Document> {
       totalCount: number;
     };
   }> {
-    const features = new APIFeatures(this.model, queryString)
+    const features = new APIFeatures(this.model, queryString, this.factoryService)
       .filter()
       .sort()
       .limitFields()
@@ -85,7 +88,8 @@ export abstract class BaseService<T extends Document> {
     }
 
     Object.assign(doc, updateDto);
-    await doc.save({ validateBeforeSave: false });
+    // Keep schema validation on (LSP: subclasses inherit a sound contract)
+    await doc.save();
 
     return doc;
   }

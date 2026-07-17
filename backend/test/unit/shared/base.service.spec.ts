@@ -11,11 +11,8 @@ class TestDocument extends Document {
 
 // Concrete implementation of BaseService for testing
 class TestService extends BaseService<TestDocument> {
-  constructor(model: Model<TestDocument>, factoryService?: FactoryService) {
-    super(model);
-    if (factoryService) {
-      this.factoryService = factoryService;
-    }
+  constructor(model: Model<TestDocument>, factoryService: FactoryService) {
+    super(model, factoryService);
   }
 }
 
@@ -240,7 +237,7 @@ describe('BaseService', () => {
       const result = await service.update('123', updateDto);
 
       expect(mockFactoryService.findById).toHaveBeenCalledWith(mockModel, '123');
-      expect(mockDoc.save).toHaveBeenCalledWith({ validateBeforeSave: false });
+      expect(mockDoc.save).toHaveBeenCalled();
       expect(result).toEqual(mockDoc);
     });
 

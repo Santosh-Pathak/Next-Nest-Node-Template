@@ -20,10 +20,14 @@ export class APIFeatures<T extends Document> {
   public totalCount = 0;
   private factoryService: FactoryService;
 
-  constructor(model: Model<T>, queryString: QueryString) {
+  constructor(
+    model: Model<T>,
+    queryString: QueryString,
+    factoryService: FactoryService = new FactoryService(),
+  ) {
     this.model = model;
     this.queryString = queryString;
-    this.factoryService = new FactoryService();
+    this.factoryService = factoryService;
   }
 
   private excludeFieldsAndParseQuery(): FilterQuery<T> {

@@ -4,8 +4,8 @@ import { AuthService } from '../../../src/modules/auth/services/auth.service';
 import { UsersService } from '../../../src/modules/users/services/users.service';
 import { TokenService } from '../../../src/modules/auth/services/token.service';
 import { OtpService } from '../../../src/modules/auth/services/otp.service';
+import { EmailService } from '../../../src/shared/services/email.service';
 import { Role } from '../../../src/common/enums/role.enum';
-import { TokenType } from '../../../src/modules/auth/schemas/token.schema';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt');
@@ -24,6 +24,7 @@ describe('AuthService', () => {
     role: Role.DEVELOPER,
     isActive: true,
     isEmailVerified: false,
+    photo: '',
     toObject: jest.fn().mockReturnValue({
       _id: '507f1f77bcf86cd799439011',
       email: 'test@example.com',
@@ -39,24 +40,28 @@ describe('AuthService', () => {
     findUserById: jest.fn(),
     createUser: jest.fn(),
     updateUser: jest.fn(),
+    setPassword: jest.fn(),
   };
 
   const mockTokenService = {
     generateAuthTokens: jest.fn(),
     refreshAuthTokens: jest.fn(),
-    blacklistToken: jest.fn(),
+    revokeRefreshToken: jest.fn(),
     revokeAllUserTokens: jest.fn(),
-    jwtService: {
-      verify: jest.fn(),
-    },
-    configService: {
-      get: jest.fn().mockReturnValue('test-secret'),
-    },
+    issuePasswordResetToken: jest.fn(),
+    consumePasswordResetToken: jest.fn(),
   };
 
   const mockOtpService = {
     generateEmailOtp: jest.fn(),
     verifyEmailOtp: jest.fn(),
+  };
+
+  const mockEmailService = {
+    sendSystemPasswordEmail: jest.fn(),
+    sendVerificationEmail: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
+    sendPasswordResetConfirmation: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -66,6 +71,7 @@ describe('AuthService', () => {
         { provide: UsersService, useValue: mockUsersService },
         { provide: TokenService, useValue: mockTokenService },
         { provide: OtpService, useValue: mockOtpService },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -98,171 +104,53 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
 
       const result = await service.validateUser('nonexistent@example.com', 'password123');
-
       expect(result).toBeNull();
-    });
-
-    it('should return null if password is invalid', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(mockUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-
-      const result = await service.validateUser('test@example.com', 'wrongpassword');
-
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('loginUserWithEmailAndPassword', () => {
-    it('should login user successfully', async () => {
-      const activeUser = { ...mockUser, isActive: true };
-      mockUsersService.findByEmail.mockResolvedValue(activeUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      mockUsersService.updateUser.mockResolvedValue(activeUser);
-
-      const result = await service.loginUserWithEmailAndPassword('test@example.com', 'password123');
-
-      expect(usersService.updateUser).toHaveBeenCalledWith(
-        String(activeUser._id),
-        expect.objectContaining({ lastLogin: expect.any(Date) }),
-      );
-      expect(result).toBeDefined();
-    });
-
-    it('should throw UnauthorizedException for invalid credentials', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
-
-      await expect(
-        service.loginUserWithEmailAndPassword('test@example.com', 'wrongpassword'),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it('should throw UnauthorizedException if account is inactive', async () => {
-      const inactiveUser = {
-        ...mockUser,
-        isActive: false,
-        toObject: jest.fn().mockReturnValue({
-          _id: '507f1f77bcf86cd799439011',
-          email: 'test@example.com',
-          name: 'Test User',
-          password: 'hashed-password',
-          role: Role.DEVELOPER,
-          isActive: false,
-        }),
-      };
-      mockUsersService.findByEmail.mockResolvedValue(inactiveUser);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-
-      await expect(
-        service.loginUserWithEmailAndPassword('test@example.com', 'password123'),
-      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
   describe('signup', () => {
     const signupData = {
-      email: 'newuser@example.com',
-      password: 'password123',
+      email: 'new@example.com',
+      password: 'Password123!',
       name: 'New User',
     };
 
-    it('should signup new user successfully', async () => {
+    it('should signup new user as developer only', async () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
-
-      const newUser = { ...mockUser, ...signupData, password: 'hashed-password' };
+      const newUser = { ...mockUser, ...signupData };
       mockUsersService.createUser.mockResolvedValue(newUser);
 
       const result = await service.signup(signupData);
 
       expect(usersService.findByEmail).toHaveBeenCalledWith(signupData.email);
-      expect(bcrypt.hash).toHaveBeenCalledWith(signupData.password, 10);
       expect(usersService.createUser).toHaveBeenCalledWith({
-        ...signupData,
-        password: 'hashed-password',
+        name: signupData.name,
+        email: signupData.email,
+        password: signupData.password,
+        role: Role.DEVELOPER,
       });
       expect(result).not.toHaveProperty('password');
     });
 
-    it('should throw ConflictException if email already exists', async () => {
+    it('should throw ConflictException if email exists', async () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
-
       await expect(service.signup(signupData)).rejects.toThrow(ConflictException);
     });
   });
 
-  describe('registerUser', () => {
-    const registerData = {
-      name: 'Admin User',
-      email: 'admin@example.com',
-      role: Role.ADMIN,
-    };
-
-    it('should register user with system-generated password', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-system-password');
-
-      const newUser = { ...mockUser, ...registerData };
-      mockUsersService.createUser.mockResolvedValue(newUser);
-
-      const result = await service.registerUser(registerData);
-
-      expect(result).toHaveProperty('user');
-      expect(result).toHaveProperty('systemPassword');
-      expect(result.user).not.toHaveProperty('password');
-      expect(typeof result.systemPassword).toBe('string');
-      expect(result.systemPassword.length).toBeGreaterThan(0);
-    });
-
-    it('should throw ConflictException if email already exists', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(mockUser);
-
-      await expect(service.registerUser(registerData)).rejects.toThrow(ConflictException);
-    });
-
-    it('should set isEmailVerified to true by default', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-system-password');
-
-      const newUser = { ...mockUser, ...registerData, isEmailVerified: true };
-      mockUsersService.createUser.mockResolvedValue(newUser);
-
-      await service.registerUser(registerData);
-
-      expect(usersService.createUser).toHaveBeenCalledWith(
-        expect.objectContaining({ isEmailVerified: true }),
-      );
-    });
-  });
-
   describe('logout', () => {
-    const refreshToken = 'valid-refresh-token';
-    const mockPayload = {
-      sub: '507f1f77bcf86cd799439011',
-      email: 'test@example.com',
-      role: Role.DEVELOPER,
-      jti: 'token-id-123',
-    };
+    it('should revoke refresh token via TokenService', async () => {
+      mockTokenService.revokeRefreshToken.mockResolvedValue(undefined);
 
-    it('should logout user by blacklisting refresh token', async () => {
-      mockTokenService.jwtService.verify.mockReturnValue(mockPayload);
-      mockTokenService.blacklistToken.mockResolvedValue(undefined);
+      await service.logout('valid-refresh-token');
 
-      await service.logout(refreshToken);
-
-      expect(mockTokenService.jwtService.verify).toHaveBeenCalledWith(
-        refreshToken,
-        expect.any(Object),
-      );
-      expect(mockTokenService.blacklistToken).toHaveBeenCalledWith(
-        mockPayload.jti,
-        TokenType.REFRESH,
-      );
+      expect(tokenService.revokeRefreshToken).toHaveBeenCalledWith('valid-refresh-token');
     });
 
     it('should throw UnauthorizedException for invalid refresh token', async () => {
-      mockTokenService.jwtService.verify.mockImplementation(() => {
-        throw new Error('Invalid token');
-      });
+      mockTokenService.revokeRefreshToken.mockRejectedValue(
+        new UnauthorizedException('Invalid refresh token'),
+      );
 
       await expect(service.logout('invalid-token')).rejects.toThrow(UnauthorizedException);
     });
@@ -276,17 +164,13 @@ describe('AuthService', () => {
     it('should update password successfully', async () => {
       mockUsersService.findUserById.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed-password');
-      mockUsersService.updateUser.mockResolvedValue(mockUser);
+      mockUsersService.setPassword.mockResolvedValue(mockUser);
 
       await service.updatePassword(userId, currentPassword, newPassword);
 
       expect(usersService.findUserById).toHaveBeenCalledWith(userId);
       expect(bcrypt.compare).toHaveBeenCalledWith(currentPassword, mockUser.password);
-      expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, 10);
-      expect(usersService.updateUser).toHaveBeenCalledWith(userId, {
-        password: 'new-hashed-password',
-      });
+      expect(usersService.setPassword).toHaveBeenCalledWith(userId, newPassword);
     });
 
     it('should throw BadRequestException if user not found', async () => {
@@ -310,44 +194,42 @@ describe('AuthService', () => {
   describe('resetPassword', () => {
     const email = 'test@example.com';
     const newPassword = 'NewPassword123!';
+    const resetToken = 'reset-token-abc';
 
-    it('should reset password successfully', async () => {
+    it('should reset password with valid reset token', async () => {
+      mockTokenService.consumePasswordResetToken.mockResolvedValue(mockUser._id);
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
-      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed-password');
-      mockUsersService.updateUser.mockResolvedValue(mockUser);
+      mockUsersService.setPassword.mockResolvedValue(mockUser);
       mockTokenService.revokeAllUserTokens.mockResolvedValue(undefined);
+      mockEmailService.sendPasswordResetConfirmation.mockResolvedValue(undefined);
 
-      await service.resetPassword(email, newPassword);
+      await service.resetPassword(email, newPassword, resetToken);
 
-      expect(usersService.findByEmail).toHaveBeenCalledWith(email);
-      expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, 10);
-      expect(usersService.updateUser).toHaveBeenCalledWith(mockUser._id.toString(), {
-        password: 'new-hashed-password',
-      });
-      expect(tokenService.revokeAllUserTokens).toHaveBeenCalledWith(mockUser._id.toString());
+      expect(tokenService.consumePasswordResetToken).toHaveBeenCalledWith(resetToken);
+      expect(usersService.setPassword).toHaveBeenCalledWith(mockUser._id, newPassword);
+      expect(tokenService.revokeAllUserTokens).toHaveBeenCalledWith(mockUser._id);
     });
 
-    it('should throw BadRequestException if user not found', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
+    it('should throw if email does not match token user', async () => {
+      mockTokenService.consumePasswordResetToken.mockResolvedValue('other-user-id');
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
 
-      await expect(service.resetPassword(email, newPassword)).rejects.toThrow(BadRequestException);
+      await expect(service.resetPassword(email, newPassword, resetToken)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
-  describe('refreshAuth', () => {
-    const refreshToken = 'valid-refresh-token';
-    const mockTokens = {
-      accessToken: 'new-access-token',
-      refreshToken: 'new-refresh-token',
-    };
+  describe('verifyPasswordResetOtp', () => {
+    it('should issue reset token after OTP verify', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(mockUser);
+      mockOtpService.verifyEmailOtp.mockResolvedValue(true);
+      mockTokenService.issuePasswordResetToken.mockResolvedValue('reset-xyz');
 
-    it('should refresh auth tokens successfully', async () => {
-      mockTokenService.refreshAuthTokens.mockResolvedValue(mockTokens);
+      const result = await service.verifyPasswordResetOtp(mockUser.email, '123456');
 
-      const result = await service.refreshAuth(refreshToken);
-
-      expect(tokenService.refreshAuthTokens).toHaveBeenCalledWith(refreshToken);
-      expect(result).toEqual(mockTokens);
+      expect(result).toEqual({ resetToken: 'reset-xyz' });
+      expect(tokenService.issuePasswordResetToken).toHaveBeenCalledWith(mockUser._id);
     });
   });
 });

@@ -1,17 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
+import { IStorageService, UploadResult } from '@shared/interfaces/storage.interface';
 
-export interface UploadResult {
-  url: string;
-  fileName: string;
-  size: number;
-  mimetype: string;
-  blobExists: boolean;
-}
+export type { UploadResult };
 
+/**
+ * Adapter: Azure Blob Storage implementing IStorageService (DIP).
+ */
 @Injectable()
-export class AzureBlobService implements OnModuleInit {
+export class AzureBlobService implements OnModuleInit, IStorageService {
   private readonly logger = new Logger(AzureBlobService.name);
   private blobServiceClient: BlobServiceClient;
   private accountName: string;

@@ -171,6 +171,66 @@ export class TokenService {
   }
 
   /**
+   * Revoke a refresh token JWT (verify + blacklist jti).
+   * Encapsulation: callers must not reach into jwtService/configService.
+   */
+  async revokeRefreshToken(refreshToken: string): Promise<void> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('jwt.refreshSecret'),
+      }) as JwtPayload;
+
+      if (!payload.jti) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      await this.blacklistToken(payload.jti, TokenType.REFRESH);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  /**
+   * Issue a short-lived password-reset token after OTP verification.
+   */
+  async issuePasswordResetToken(userId: string): Promise<string> {
+    const tokenId = this.generateTokenId();
+    const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await this.factoryService.create(this.tokenModel, {
+      token: tokenId,
+      user: new Types.ObjectId(userId),
+      type: TokenType.RESET_PASSWORD,
+      expires,
+      blacklisted: false,
+    });
+
+    return tokenId;
+  }
+
+  /**
+   * Consume a password-reset token. Returns user id if valid.
+   */
+  async consumePasswordResetToken(resetToken: string): Promise<string> {
+    const doc = await this.factoryService.findOne(this.tokenModel, {
+      token: resetToken,
+      type: TokenType.RESET_PASSWORD,
+      blacklisted: false,
+      expires: { $gt: new Date() },
+    });
+
+    if (!doc) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+
+    await this.blacklistToken(resetToken, TokenType.RESET_PASSWORD);
+    return doc.user.toString();
+  }
+
+  /**
    * Blacklist a token
    */
   async blacklistToken(tokenId: string, type: TokenType): Promise<void> {

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 
 /**
- * Factory Service for all database operations
- * Provides a centralized interface for Mongoose CRUD operations
+ * Generic data-access helper (Repository-style DAO).
+ * Prefer injecting this via Nest DI — do not treat as a GoF Factory.
  */
 @Injectable()
 export class FactoryService {
