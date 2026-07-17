@@ -6,7 +6,15 @@ import axios, {
    InternalAxiosRequestConfig,
 } from 'axios'
 import toast from 'react-hot-toast'
-import { BASE_URL, STORAGE_KEYS, ROUTES } from '@/constants/urls'
+import { BASE_URL } from '@/constants/urls'
+import {
+   getAccessTokenFromCookie,
+   getRefreshTokenFromCookie,
+   updateAccessTokenCookie,
+   clearAuthCookies,
+   handleSessionExpired,
+   syncAccessTokenToStore,
+} from '@/services/auth-session'
 
 // Backend API Response Types (updated to handle both formats)
 export interface BackendApiResponse<T = any> {
@@ -75,7 +83,6 @@ class HttpService {
    private readonly instance: AxiosInstance
    private refreshTokenPromise: Promise<string> | null = null
    private isRefreshing = false
-   private isLoggingOut = false
    private failedQueue: Array<{
       resolve: (token: string) => void
       reject: (error: any) => void
@@ -110,99 +117,24 @@ class HttpService {
       this.failedQueue = []
    }
 
-   /**
-    * Get access token from cookies
-    */
    private getAccessToken(): string | null {
-      if (typeof window === 'undefined') return null
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find((cookie) =>
-         cookie.trim().startsWith(`${STORAGE_KEYS.ACCESS_TOKEN}=`)
-      )
-      return tokenCookie ? tokenCookie.split('=')[1] : null
+      return getAccessTokenFromCookie()
    }
 
-   /**
-    * Get refresh token from cookies
-    */
    private getRefreshToken(): string | null {
-      if (typeof window === 'undefined') return null
-      const cookies = document.cookie.split(';')
-      const tokenCookie = cookies.find((cookie) =>
-         cookie.trim().startsWith(`${STORAGE_KEYS.REFRESH_TOKEN}=`)
-      )
-      return tokenCookie ? tokenCookie.split('=')[1] : null
+      return getRefreshTokenFromCookie()
    }
 
-   /**
-    * Update access token in cookie
-    */
    private updateAccessToken(newToken: string): void {
-      if (typeof window === 'undefined') return
-
-      const isProduction = process.env.NODE_ENV === 'production'
-      const secure = isProduction ? '; secure' : ''
-
-      // Set new access token (no expiry - let server handle it)
-      document.cookie = `${STORAGE_KEYS.ACCESS_TOKEN}=${newToken}; path=/; samesite=strict${secure}`
-
-      console.log('Access token updated in cookies')
+      updateAccessTokenCookie(newToken)
    }
 
-   /**
-    * Clear all authentication tokens
-    */
    private clearTokens(): void {
-      if (typeof window === 'undefined') return
-
-      document.cookie = `${STORAGE_KEYS.ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-      document.cookie = `${STORAGE_KEYS.REFRESH_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-      document.cookie = `${STORAGE_KEYS.USER}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+      clearAuthCookies()
    }
 
-   /**
-    * Handle authentication failure and logout
-    */
    private handleAuthenticationFailure(): void {
-      console.log('Authentication failure detected, initiating logout...')
-
-      // Prevent multiple concurrent logout attempts
-      if (this.isLoggingOut) {
-         console.log('Logout already in progress, skipping...')
-         return
-      }
-
-      this.isLoggingOut = true
-      this.clearTokens()
-
-      // Use the auth store to handle logout
-      if (typeof window !== 'undefined') {
-         try {
-            import('@/store/auth.store')
-               .then(({ useAuthStore }) => {
-                  const logout = useAuthStore.getState().logout
-                  logout()
-               })
-               .catch(console.error)
-
-            // Show a user-friendly message
-            toast.error('Your session has expired. Please log in again.')
-
-            // Small delay to allow the toast to show before redirect
-            setTimeout(() => {
-               window.location.href = ROUTES.LOGIN
-            }, 1000)
-         } catch (error) {
-            console.error('Error during logout process:', error)
-            // Fallback: direct redirect
-            window.location.href = ROUTES.LOGIN
-         } finally {
-            // Reset the flag after a delay
-            setTimeout(() => {
-               this.isLoggingOut = false
-            }, 2000)
-         }
-      }
+      handleSessionExpired()
    }
 
    /**
@@ -280,21 +212,9 @@ class HttpService {
             throw new Error('No access token received from server')
          }
 
-         console.log('New access token received, updating cookies')
-
          // Update the access token in cookies
          this.updateAccessToken(accessToken)
-
-         // Update the auth store
-         if (typeof window !== 'undefined') {
-            import('@/store/auth.store')
-               .then(({ useAuthStore }) => {
-                  const refreshAccessToken =
-                     useAuthStore.getState().refreshAccessToken
-                  refreshAccessToken(accessToken)
-               })
-               .catch(console.error)
-         }
+         syncAccessTokenToStore(accessToken)
 
          return accessToken
       } catch (error: any) {

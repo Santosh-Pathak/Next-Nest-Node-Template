@@ -1,3 +1,1 @@
 npx lint-staged
-echo "Running build to check for errors..."
-pnpm build

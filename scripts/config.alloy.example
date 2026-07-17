@@ -1,0 +1,20 @@
+# Copy to config.alloy and set ALLOY_BASIC_AUTH_PASSWORD in the Alloy service env.
+# Rotate any password that was previously committed to git.
+
+prometheus.remote_write "local" {
+  endpoint {
+    url = "https://YOUR_METRICS_ENDPOINT/metrics/api/v1/push"
+     headers = {
+      "X-Scope-OrgID" = "YOUR_ORG",
+    }
+	basic_auth {
+        username = "monuser"
+        password = env("ALLOY_BASIC_AUTH_PASSWORD")
+    }
+  }
+  external_labels = {
+    hostname = "myhostname",
+  }
+}
+
+# ... see scripts/config.alloy for full scrape/log pipeline

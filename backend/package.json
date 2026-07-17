@@ -119,9 +119,9 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
+    "{src,test}/**/*.{ts,tsx}": [
+      "npx eslint --fix",
+      "npx prettier --write"
     ]
   }
 }

@@ -3,7 +3,7 @@
   "az_env": "prod",
   "vm_list": {
     "01": {
-     "bastion": false,
+      "bastion": false,
       "vm_size": "Standard_B1ms",
       "file_path": "./",
       "os_disk": {

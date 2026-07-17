@@ -142,4 +142,13 @@ vite.config.ts.timestamp-*
 .terraform.lock.hcl
 .terraform/
 *.key
+*.pem
 .DS_Store
+
+# Terraform secrets / local overrides (keep *.example.json tracked)
+*.tfvars
+*.tfvars.json
+!infra/terraform.tfvars.example.json
+
+# Local Alloy secrets — password must come from env ALLOY_BASIC_AUTH_PASSWORD
+scripts/config.alloy.local

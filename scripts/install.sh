@@ -89,6 +89,8 @@ sudo env PATH="$PATH:$node_dir" pm2 startup systemd -u "$pm2_user" --hp "$pm2_ho
 sudo pm2 save
 
 # certbot certonly --webroot -w  /var/www/html/ -d tdk-billing-service.tedekstra.com -d www.tdk-billing-service.tedekstra.com --email "support.infra@tedekstra.com"
+# Alloy: set ALLOY_BASIC_AUTH_PASSWORD in the service Environment= before restart (never commit the password).
+# e.g. echo 'Environment=ALLOY_BASIC_AUTH_PASSWORD=...' >> /etc/systemd/system/alloy.service.d/override.conf
 setcap CAP_DAC_READ_SEARCH+ep /usr/bin/alloy ;systemctl restart alloy
 # deepak.keshari@tdkglobal.com
 touch backend.env frontend.env

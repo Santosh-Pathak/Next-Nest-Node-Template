@@ -24,7 +24,7 @@ export interface AuthState {
    // Session management
    lastActivity: Date | null
 
-   // Upload state
+   // Upload UI state only (I/O lives in useAuthUpload)
    isUploading: boolean
    uploadProgress: number
 
@@ -65,21 +65,9 @@ export interface AuthActions {
    setError: (error: string | null) => void
    clearError: () => void
 
-   // Upload management
+   // Upload UI state
    setUploading: (isUploading: boolean) => void
    setUploadProgress: (progress: number) => void
-   uploadFile: (
-      file: File,
-      options?: {
-         container?: string
-         folder?: string
-         updateProfile?: boolean
-      }
-   ) => Promise<any>
-   uploadProfilePhoto: (file: File) => Promise<User>
-
-   // Profile management
-   updateProfile: (profileData: Partial<User>) => Promise<User>
 
    // Session management
    updateActivity: () => void
@@ -274,84 +262,6 @@ export const useAuthStore = create<AuthStore>()(
             })
          },
 
-         uploadFile: async (file: File, options = {}) => {
-            const state = get()
-
-            try {
-               state.setUploading(true)
-               state.setError(null)
-               state.setUploadProgress(0)
-
-               // Simulate upload progress
-               let progress = 0
-               const progressInterval = setInterval(() => {
-                  progress = Math.min(progress + 10, 90)
-                  state.setUploadProgress(progress)
-               }, 100)
-
-               const { AuthService } = await import(
-                  '@/services/apis/auth.service'
-               )
-               const result = await AuthService.uploadFile(file, options)
-
-               clearInterval(progressInterval)
-               state.setUploadProgress(100)
-
-               // Update user if profile was updated
-               if (result.user) {
-                  set((state) => {
-                     state.user = result.user as any
-                  })
-               }
-
-               return result
-            } catch (error: any) {
-               state.setError(error.message || 'Upload failed')
-               throw error
-            } finally {
-               state.setUploading(false)
-               setTimeout(() => state.setUploadProgress(0), 1000)
-            }
-         },
-
-         uploadProfilePhoto: async (file: File) => {
-            const result = await get().uploadFile(file, {
-               container: 'profile-photos',
-               updateProfile: true,
-            })
-
-            if (!result.user) {
-               throw new Error('Profile update failed')
-            }
-
-            return result.user
-         },
-
-         updateProfile: async (profileData: Partial<User>) => {
-            const { setLoading, setError, setUser } = get()
-
-            try {
-               setLoading(true)
-               setError(null)
-
-               const { AuthService } = await import(
-                  '@/services/apis/auth.service'
-               )
-               const updatedUser = await AuthService.updateProfile(profileData)
-
-               // Update user in store
-               setUser(updatedUser)
-
-               return updatedUser
-            } catch (error: any) {
-               const errorMessage = error.message || 'Failed to update profile'
-               setError(errorMessage)
-               throw error
-            } finally {
-               setLoading(false)
-            }
-         },
-
          updateActivity: () => {
             set((state) => {
                state.lastActivity = new Date()
@@ -487,9 +397,6 @@ export const authActions = {
    clearError: () => useAuthStore((state) => state.clearError),
    setUploading: () => useAuthStore((state) => state.setUploading),
    setUploadProgress: () => useAuthStore((state) => state.setUploadProgress),
-   uploadFile: () => useAuthStore((state) => state.uploadFile),
-   uploadProfilePhoto: () => useAuthStore((state) => state.uploadProfilePhoto),
-   updateProfile: () => useAuthStore((state) => state.updateProfile),
    updateActivity: () => useAuthStore((state) => state.updateActivity),
    refreshAccessToken: () => useAuthStore((state) => state.refreshAccessToken),
    updatePreferences: () => useAuthStore((state) => state.updatePreferences),

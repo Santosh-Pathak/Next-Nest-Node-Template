@@ -21,8 +21,6 @@ import {
 import {
    Theme,
    EnhancedThemeContextType,
-   ThemeContextState,
-   ThemeAction,
    ColorPickerValue,
    ColorHarmony,
    ThemeExportOptions,
@@ -30,105 +28,7 @@ import {
    ThemeError,
 } from '@/types/theme'
 import { themeApi } from '@/services/themeApi'
-
-// Theme reducer for complex state management
-function themeReducer(state: ThemeContextState, action: ThemeAction): ThemeContextState {
-   switch (action.type) {
-      case 'SET_LOADING':
-         return { ...state, isLoading: action.payload, error: null }
-      
-      case 'SET_ERROR':
-         return { ...state, error: action.payload, isLoading: false }
-      
-      case 'LOAD_THEMES':
-         return { 
-            ...state, 
-            themes: action.payload, 
-            isLoading: false, 
-            error: null,
-            lastSync: new Date()
-         }
-      
-      case 'SET_ACTIVE_THEME':
-         return { 
-            ...state, 
-            activeTheme: action.payload,
-            currentTheme: action.payload,
-            isLoading: false 
-         }
-      
-      case 'SET_MODE':
-         return {
-            ...state,
-            mode: action.payload
-         }
-      
-      case 'CREATE_THEME':
-         return { 
-            ...state, 
-            themes: [...state.themes, action.payload],
-            isDirty: false
-         }
-      
-      case 'UPDATE_THEME':
-         return {
-            ...state,
-            themes: state.themes.map(theme => 
-               theme._id === action.payload._id ? action.payload : theme
-            ),
-            currentTheme: state.currentTheme?._id === action.payload._id 
-               ? action.payload 
-               : state.currentTheme,
-            isDirty: false
-         }
-      
-      case 'DELETE_THEME':
-         return {
-            ...state,
-            themes: state.themes.filter(theme => theme._id !== action.payload),
-         }
-      
-      case 'PREVIEW_THEME':
-         return {
-            ...state,
-            previewTheme: action.payload,
-            isPreviewMode: true
-         }
-      
-      case 'RESET_THEME':
-         return {
-            ...state,
-            previewTheme: null,
-            isPreviewMode: false,
-            isDirty: false,
-            selectedColor: null,
-            colorHarmony: null
-         }
-      
-      default:
-         return state
-   }
-}
-
-// Initial state
-const initialState: ThemeContextState = {
-   currentTheme: null,
-   mode: 'system',
-   resolvedMode: 'light',
-   themes: [],
-   activeTheme: null,
-   defaultTheme: null,
-   isLoading: false,
-   error: null,
-   previewTheme: null,
-   isPreviewMode: false,
-   isAdminMode: false,
-   isDirty: false,
-   selectedColor: null,
-   colorHarmony: null,
-   lastSync: null,
-   isOnline: true,
-}
+import { themeReducer, themeInitialState } from '@/contexts/theme-reducer'
 
 interface ThemeProviderProps {
    readonly children: React.ReactNode
@@ -136,12 +36,20 @@ interface ThemeProviderProps {
    readonly enableAdmin?: boolean
 }
 
-const ThemeContext = createContext<EnhancedThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<EnhancedThemeContextType | undefined>(
+   undefined
+)
 
-export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmin = false }: ThemeProviderProps) {
-   const [state, dispatch] = useReducer(themeReducer, initialState)
+export function ThemeProvider({
+   children,
+   enableDynamicThemes = true,
+   enableAdmin = false,
+}: ThemeProviderProps) {
+   const [state, dispatch] = useReducer(themeReducer, themeInitialState)
    const [systemTheme, setSystemTheme] = useState<'dark' | 'light'>('light')
-   const [customColors, setCustomColors] = useState<Partial<typeof colorPalette>>({})
+   const [customColors, setCustomColors] = useState<
+      Partial<typeof colorPalette>
+   >({})
 
    // Derived state
    const resolvedMode = state.mode === 'system' ? systemTheme : state.mode
@@ -179,7 +87,11 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
          dispatch({ type: 'LOAD_THEMES', payload: response.data })
       } catch (error) {
          console.error('loadThemes error:', error)
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to load themes' })
+         dispatch({
+            type: 'SET_ERROR',
+            payload:
+               error instanceof Error ? error.message : 'Failed to load themes',
+         })
       }
    }, [enableDynamicThemes])
 
@@ -204,34 +116,58 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
          const response = await themeApi.activateTheme(themeId)
          dispatch({ type: 'SET_ACTIVE_THEME', payload: response.data })
       } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to activate theme' })
+         dispatch({
+            type: 'SET_ERROR',
+            payload:
+               error instanceof Error
+                  ? error.message
+                  : 'Failed to activate theme',
+         })
       }
    }, [])
 
    // Theme CRUD operations
-   const createTheme = useCallback(async (theme: Partial<Theme>): Promise<Theme> => {
-      try {
-         dispatch({ type: 'SET_LOADING', payload: true })
-         const response = await themeApi.createTheme(theme)
-         dispatch({ type: 'CREATE_THEME', payload: response.data })
-         return response.data
-      } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to create theme' })
-         throw error
-      }
-   }, [])
+   const createTheme = useCallback(
+      async (theme: Partial<Theme>): Promise<Theme> => {
+         try {
+            dispatch({ type: 'SET_LOADING', payload: true })
+            const response = await themeApi.createTheme(theme)
+            dispatch({ type: 'CREATE_THEME', payload: response.data })
+            return response.data
+         } catch (error) {
+            dispatch({
+               type: 'SET_ERROR',
+               payload:
+                  error instanceof Error
+                     ? error.message
+                     : 'Failed to create theme',
+            })
+            throw error
+         }
+      },
+      []
+   )
 
-   const updateTheme = useCallback(async (themeId: string, updates: Partial<Theme>): Promise<Theme> => {
-      try {
-         dispatch({ type: 'SET_LOADING', payload: true })
-         const response = await themeApi.updateTheme(themeId, updates)
-         dispatch({ type: 'UPDATE_THEME', payload: response.data })
-         return response.data
-      } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to update theme' })
-         throw error
-      }
-   }, [])
+   const updateTheme = useCallback(
+      async (themeId: string, updates: Partial<Theme>): Promise<Theme> => {
+         try {
+            dispatch({ type: 'SET_LOADING', payload: true })
+            const response = await themeApi.updateTheme(themeId, updates)
+            dispatch({ type: 'UPDATE_THEME', payload: response.data })
+            return response.data
+         } catch (error) {
+            dispatch({
+               type: 'SET_ERROR',
+               payload:
+                  error instanceof Error
+                     ? error.message
+                     : 'Failed to update theme',
+            })
+            throw error
+         }
+      },
+      []
+   )
 
    const deleteTheme = useCallback(async (themeId: string): Promise<void> => {
       try {
@@ -239,35 +175,59 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
          await themeApi.deleteTheme(themeId)
          dispatch({ type: 'DELETE_THEME', payload: themeId })
       } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to delete theme' })
+         dispatch({
+            type: 'SET_ERROR',
+            payload:
+               error instanceof Error
+                  ? error.message
+                  : 'Failed to delete theme',
+         })
          throw error
       }
    }, [])
 
-   const cloneTheme = useCallback(async (themeId: string, name?: string): Promise<Theme> => {
-      try {
-         dispatch({ type: 'SET_LOADING', payload: true })
-         const response = await themeApi.cloneTheme(themeId)
-         if (name && response.data) {
-            response.data.name = name
+   const cloneTheme = useCallback(
+      async (themeId: string, name?: string): Promise<Theme> => {
+         try {
+            dispatch({ type: 'SET_LOADING', payload: true })
+            const response = await themeApi.cloneTheme(themeId)
+            if (name && response.data) {
+               response.data.name = name
+            }
+            dispatch({ type: 'CREATE_THEME', payload: response.data })
+            return response.data
+         } catch (error) {
+            dispatch({
+               type: 'SET_ERROR',
+               payload:
+                  error instanceof Error
+                     ? error.message
+                     : 'Failed to clone theme',
+            })
+            throw error
          }
-         dispatch({ type: 'CREATE_THEME', payload: response.data })
-         return response.data
-      } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to clone theme' })
-         throw error
-      }
-   }, [])
+      },
+      []
+   )
 
    // Theme import/export
-   const exportTheme = useCallback(async (themeId: string, options: ThemeExportOptions): Promise<string> => {
-      try {
-         return await themeApi.exportTheme(themeId, options)
-      } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to export theme' })
-         throw error
-      }
-   }, [])
+   const exportTheme = useCallback(
+      async (themeId: string, options: ThemeExportOptions): Promise<string> => {
+         try {
+            return await themeApi.exportTheme(themeId, options)
+         } catch (error) {
+            dispatch({
+               type: 'SET_ERROR',
+               payload:
+                  error instanceof Error
+                     ? error.message
+                     : 'Failed to export theme',
+            })
+            throw error
+         }
+      },
+      []
+   )
 
    const importTheme = useCallback(async (themeData: any): Promise<Theme> => {
       try {
@@ -276,7 +236,13 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
          dispatch({ type: 'CREATE_THEME', payload: response.data })
          return response.data
       } catch (error) {
-         dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to import theme' })
+         dispatch({
+            type: 'SET_ERROR',
+            payload:
+               error instanceof Error
+                  ? error.message
+                  : 'Failed to import theme',
+         })
          throw error
       }
    }, [])
@@ -298,7 +264,13 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
             }
             dispatch({ type: 'RESET_THEME' })
          } catch (error) {
-            dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to apply preview' })
+            dispatch({
+               type: 'SET_ERROR',
+               payload:
+                  error instanceof Error
+                     ? error.message
+                     : 'Failed to apply preview',
+            })
          }
       }
    }, [state.previewTheme, setActiveTheme])
@@ -321,33 +293,45 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
    }, [setMode])
 
    // Color management
-   const updateColor = useCallback((colorPath: string, color: ColorPickerValue) => {
-      // Implementation for updating specific colors in the theme
-      console.log('Update color:', colorPath, color)
-   }, [])
+   const updateColor = useCallback(
+      (colorPath: string, color: ColorPickerValue) => {
+         // Implementation for updating specific colors in the theme
+         console.log('Update color:', colorPath, color)
+      },
+      []
+   )
 
-   const generateHarmony = useCallback((baseColor: string, type: ColorHarmony['type']): ColorHarmony => {
-      // Implementation for generating color harmony
-      return {
-         type,
-         colors: [baseColor],
-         description: `${type} harmony based on ${baseColor}`
-      }
-   }, [])
+   const generateHarmony = useCallback(
+      (baseColor: string, type: ColorHarmony['type']): ColorHarmony => {
+         // Implementation for generating color harmony
+         return {
+            type,
+            colors: [baseColor],
+            description: `${type} harmony based on ${baseColor}`,
+         }
+      },
+      []
+   )
 
-   const applyColorPalette = useCallback((palette: Partial<typeof colorPalette>) => {
-      setCustomColors(palette)
-   }, [])
+   const applyColorPalette = useCallback(
+      (palette: Partial<typeof colorPalette>) => {
+         setCustomColors(palette)
+      },
+      []
+   )
 
    // Validation
-   const validateTheme = useCallback(async (theme: Partial<Theme>): Promise<ThemeValidationResult> => {
-      try {
-         const response = await themeApi.validateTheme(theme)
-         return response.data
-      } catch (error) {
-         throw error
-      }
-   }, [])
+   const validateTheme = useCallback(
+      async (theme: Partial<Theme>): Promise<ThemeValidationResult> => {
+         try {
+            const response = await themeApi.validateTheme(theme)
+            return response.data
+         } catch (error) {
+            throw error
+         }
+      },
+      []
+   )
 
    // Utility functions
    const resetTheme = useCallback(() => {
@@ -361,12 +345,18 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
 
    const enterAdminMode = useCallback(() => {
       if (enableAdmin) {
-         dispatch({ type: 'SET_ACTIVE_THEME', payload: { ...state, isAdminMode: true } as any })
+         dispatch({
+            type: 'SET_ACTIVE_THEME',
+            payload: { ...state, isAdminMode: true } as any,
+         })
       }
    }, [enableAdmin, state])
 
    const exitAdminMode = useCallback(() => {
-      dispatch({ type: 'SET_ACTIVE_THEME', payload: { ...state, isAdminMode: false, isDirty: false } as any })
+      dispatch({
+         type: 'SET_ACTIVE_THEME',
+         payload: { ...state, isAdminMode: false, isDirty: false } as any,
+      })
    }, [state])
 
    const saveChanges = useCallback(async () => {
@@ -394,18 +384,26 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
 
    const getCurrentThemeConfig = useCallback(() => {
       const mode = resolvedMode
-      return state.currentTheme 
-         ? (mode === 'dark' ? state.currentTheme.darkTheme : state.currentTheme.lightTheme)
+      return state.currentTheme
+         ? mode === 'dark'
+            ? state.currentTheme.darkTheme
+            : state.currentTheme.lightTheme
          : currentThemeConfig
    }, [state.currentTheme, resolvedMode, currentThemeConfig])
 
-   const getThemeById = useCallback((id: string) => {
-      return state.themes.find(theme => theme._id === id) || null
-   }, [state.themes])
+   const getThemeById = useCallback(
+      (id: string) => {
+         return state.themes.find((theme) => theme._id === id) || null
+      },
+      [state.themes]
+   )
 
-   const isCurrentTheme = useCallback((themeId: string) => {
-      return state.currentTheme?._id === themeId
-   }, [state.currentTheme])
+   const isCurrentTheme = useCallback(
+      (themeId: string) => {
+         return state.currentTheme?._id === themeId
+      },
+      [state.currentTheme]
+   )
 
    // Load themes on mount
    useEffect(() => {
@@ -455,18 +453,23 @@ export function ThemeProvider({ children, enableDynamicThemes = true, enableAdmi
       // Use current theme or fallback to default
       const themeConfig = getCurrentThemeConfig()
       const colors = getCurrentColors()
-      
+
       const lightVars = generateCSSVariables(
-         state.currentTheme?.lightTheme || lightTheme, 
+         state.currentTheme?.lightTheme || lightTheme,
          'light'
       )
       const darkVars = generateCSSVariables(
-         state.currentTheme?.darkTheme || darkTheme, 
+         state.currentTheme?.darkTheme || darkTheme,
          'dark'
       )
 
       styleElement.textContent = `${lightVars}\n${darkVars}`
-   }, [resolvedMode, state.currentTheme, getCurrentColors, getCurrentThemeConfig])
+   }, [
+      resolvedMode,
+      state.currentTheme,
+      getCurrentColors,
+      getCurrentThemeConfig,
+   ])
 
    const contextValue = useMemo<EnhancedThemeContextType>(
       () => ({
