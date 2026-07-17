@@ -50,18 +50,13 @@ describe('ZodValidationPipe + createZodDto', () => {
 
   it('throws BadRequest on invalid body', () => {
     expect(() =>
-      pipe.transform(
-        { email: 'not-an-email' },
-        { type: 'body', metatype: SampleDto, data: '' },
-      ),
+      pipe.transform({ email: 'not-an-email' }, { type: 'body', metatype: SampleDto, data: '' }),
     ).toThrow();
   });
 
   it('skips when metatype has no schema', () => {
     class PlainDto {}
     const value = { foo: 1 };
-    expect(
-      pipe.transform(value, { type: 'body', metatype: PlainDto, data: '' }),
-    ).toBe(value);
+    expect(pipe.transform(value, { type: 'body', metatype: PlainDto, data: '' })).toBe(value);
   });
 });

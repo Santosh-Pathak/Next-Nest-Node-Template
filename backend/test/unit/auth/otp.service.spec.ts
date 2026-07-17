@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { OtpService } from '../../../src/modules/auth/services/otp.service';
 import { Otp } from '../../../src/modules/auth/schemas/otp.schema';
-import { FactoryService } from '../../../src/shared/services/factory.service';
+import { DocumentDao } from '../../../src/shared/services/document-dao.service';
 
 describe('OtpService', () => {
   let service: OtpService;
@@ -14,7 +14,7 @@ describe('OtpService', () => {
     deleteMany: jest.fn(),
   };
 
-  const mockFactoryService = {
+  const mockDocumentDao = {
     create: jest.fn(),
     findOne: jest.fn(),
     deleteOne: jest.fn(),
@@ -30,8 +30,8 @@ describe('OtpService', () => {
           useValue: mockOtpModel,
         },
         {
-          provide: FactoryService,
-          useValue: mockFactoryService,
+          provide: DocumentDao,
+          useValue: mockDocumentDao,
         },
       ],
     }).compile();
@@ -51,8 +51,8 @@ describe('OtpService', () => {
     const email = 'test@example.com';
 
     it('should generate 6-digit OTP', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({});
-      mockFactoryService.create.mockResolvedValue({});
+      mockDocumentDao.deleteMany.mockResolvedValue({});
+      mockDocumentDao.create.mockResolvedValue({});
 
       const otp = await service.generateEmailOtp(email);
 
@@ -62,22 +62,22 @@ describe('OtpService', () => {
     });
 
     it('should delete existing OTPs before creating new one', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({});
-      mockFactoryService.create.mockResolvedValue({});
+      mockDocumentDao.deleteMany.mockResolvedValue({});
+      mockDocumentDao.create.mockResolvedValue({});
 
       await service.generateEmailOtp(email);
 
-      expect(mockFactoryService.deleteMany).toHaveBeenCalledWith(expect.anything(), { email });
-      expect(mockFactoryService.create).toHaveBeenCalled();
+      expect(mockDocumentDao.deleteMany).toHaveBeenCalledWith(expect.anything(), { email });
+      expect(mockDocumentDao.create).toHaveBeenCalled();
     });
 
     it('should create OTP with correct expiration time', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({});
-      mockFactoryService.create.mockResolvedValue({});
+      mockDocumentDao.deleteMany.mockResolvedValue({});
+      mockDocumentDao.create.mockResolvedValue({});
 
       await service.generateEmailOtp(email, 15);
 
-      expect(mockFactoryService.create).toHaveBeenCalledWith(
+      expect(mockDocumentDao.create).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           email,
@@ -88,14 +88,14 @@ describe('OtpService', () => {
     });
 
     it('should use default expiration of 10 minutes', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({});
-      mockFactoryService.create.mockResolvedValue({});
+      mockDocumentDao.deleteMany.mockResolvedValue({});
+      mockDocumentDao.create.mockResolvedValue({});
 
       const beforeTime = Date.now() + 10 * 60 * 1000;
       await service.generateEmailOtp(email);
       const afterTime = Date.now() + 10 * 60 * 1000;
 
-      const createCall = mockFactoryService.create.mock.calls[0][1];
+      const createCall = mockDocumentDao.create.mock.calls[0][1];
       const expiresIn = createCall.expiresIn.getTime();
 
       expect(expiresIn).toBeGreaterThanOrEqual(beforeTime - 1000);
@@ -115,33 +115,33 @@ describe('OtpService', () => {
         expiresIn: new Date(Date.now() + 10 * 60 * 1000),
       };
 
-      mockFactoryService.findOne.mockResolvedValue(mockOtpDoc);
-      mockFactoryService.deleteOne.mockResolvedValue({});
+      mockDocumentDao.findOne.mockResolvedValue(mockOtpDoc);
+      mockDocumentDao.deleteOne.mockResolvedValue({});
 
       const result = await service.verifyEmailOtp(email, otp);
 
       expect(result).toBe(true);
-      expect(mockFactoryService.findOne).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.findOne).toHaveBeenCalledWith(expect.anything(), {
         email,
         otp,
         expiresIn: { $gt: expect.any(Date) },
       });
-      expect(mockFactoryService.deleteOne).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.deleteOne).toHaveBeenCalledWith(expect.anything(), {
         _id: mockOtpDoc._id,
       });
     });
 
     it('should return false for invalid OTP', async () => {
-      mockFactoryService.findOne.mockResolvedValue(null);
+      mockDocumentDao.findOne.mockResolvedValue(null);
 
       const result = await service.verifyEmailOtp(email, 'wrong-otp');
 
       expect(result).toBe(false);
-      expect(mockFactoryService.deleteOne).not.toHaveBeenCalled();
+      expect(mockDocumentDao.deleteOne).not.toHaveBeenCalled();
     });
 
     it('should return false for expired OTP', async () => {
-      mockFactoryService.findOne.mockResolvedValue(null);
+      mockDocumentDao.findOne.mockResolvedValue(null);
 
       const result = await service.verifyEmailOtp(email, otp);
 
@@ -156,12 +156,12 @@ describe('OtpService', () => {
         expiresIn: new Date(Date.now() + 10 * 60 * 1000),
       };
 
-      mockFactoryService.findOne.mockResolvedValue(mockOtpDoc);
-      mockFactoryService.deleteOne.mockResolvedValue({});
+      mockDocumentDao.findOne.mockResolvedValue(mockOtpDoc);
+      mockDocumentDao.deleteOne.mockResolvedValue({});
 
       await service.verifyEmailOtp(email, otp);
 
-      expect(mockFactoryService.deleteOne).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.deleteOne).toHaveBeenCalledWith(expect.anything(), {
         _id: mockOtpDoc._id,
       });
     });
@@ -170,21 +170,21 @@ describe('OtpService', () => {
   describe('deleteOtpsByEmail', () => {
     it('should delete all OTPs for an email', async () => {
       const email = 'test@example.com';
-      mockFactoryService.deleteMany.mockResolvedValue({ deletedCount: 3 });
+      mockDocumentDao.deleteMany.mockResolvedValue({ deletedCount: 3 });
 
       await service.deleteOtpsByEmail(email);
 
-      expect(mockFactoryService.deleteMany).toHaveBeenCalledWith(expect.anything(), { email });
+      expect(mockDocumentDao.deleteMany).toHaveBeenCalledWith(expect.anything(), { email });
     });
   });
 
   describe('cleanupExpiredOtps', () => {
     it('should delete expired OTPs', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({ deletedCount: 10 });
+      mockDocumentDao.deleteMany.mockResolvedValue({ deletedCount: 10 });
 
       await service.cleanupExpiredOtps();
 
-      expect(mockFactoryService.deleteMany).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.deleteMany).toHaveBeenCalledWith(expect.anything(), {
         expiresIn: { $lt: expect.any(Date) },
       });
     });

@@ -72,7 +72,7 @@ function getUserFromCookies(request: NextRequest): {
    }
 
    try {
-      const user = JSON.parse(userCookie)
+      const user = JSON.parse(decodeURIComponent(userCookie))
 
       if (!user.role) {
          return { isAuthenticated: false, user: null, accessToken: null }
@@ -217,7 +217,10 @@ export default function proxy(request: NextRequest) {
       )
    }
 
-   if (Object.prototype.hasOwnProperty.call(user, 'isActive') && !user.isActive) {
+   if (
+      Object.prototype.hasOwnProperty.call(user, 'isActive') &&
+      !user.isActive
+   ) {
       return createRedirectWithToast(
          ROUTES.UNAUTHORIZED,
          request,

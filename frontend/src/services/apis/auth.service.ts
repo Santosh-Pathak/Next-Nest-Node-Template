@@ -1,6 +1,6 @@
 import { httpService } from '@/services/http'
 import { API_ENDPOINTS } from '@/constants/urls'
-import { useAuthStore, type AuthTokens } from '@/store/auth.store'
+import { useAuthStore } from '@/store/auth.store'
 import toast from 'react-hot-toast'
 import type {
    BackendResponse,
@@ -29,44 +29,25 @@ export class AuthService {
          setLoading(true)
          setError(null)
 
-         const response = await httpService.post<{
-            user: User
-            tokens:
-               | AuthTokens
-               | {
-                    access: { token: string; expires: string }
-                    refresh: { token: string; expires: string }
-                 }
-         }>(API_ENDPOINTS.AUTH.LOGIN, credentials)
+         const response = await httpService.post<{ user: User }>(
+            API_ENDPOINTS.AUTH.LOGIN,
+            credentials,
+            { skipAuth: true, skipAuthRefresh: true, showErrorToast: true }
+         )
 
-         // Transform backend tokens to our format (handle both flat and nested formats)
-         const tokens: AuthTokens =
-            'accessToken' in response.tokens
-               ? {
-                    accessToken: response.tokens.accessToken,
-                    refreshToken: response.tokens.refreshToken,
-                 }
-               : {
-                    accessToken: response.tokens.access.token,
-                    refreshToken: response.tokens.refresh.token,
-                 }
-
-         // Normalize user data - handle both id and _id
          const user = {
             ...response.user,
             _id: response.user.id || response.user._id,
             id: response.user.id || response.user._id,
          }
 
-         // Update store and cookies
-         login(user as User, tokens)
+         // Tokens are set as httpOnly cookies by the API
+         login(user as User)
 
          toast.success('Logged in successfully!')
       } catch (error: any) {
          const errorMessage = error.message || 'Login failed'
          setError(errorMessage)
-         // Don't show toast here - HTTP service already handles it
-         // Don't re-throw the error to avoid console noise
       } finally {
          setLoading(false)
       }
@@ -82,7 +63,9 @@ export class AuthService {
          setLoading(true)
          setError(null)
 
-         await httpService.post(API_ENDPOINTS.AUTH.SIGNUP, credentials)
+         await httpService.post(API_ENDPOINTS.AUTH.SIGNUP, credentials, {
+            skipAuthRefresh: true,
+         })
 
          toast.success(
             'Account created! Please check your email for verification.'
@@ -101,25 +84,56 @@ export class AuthService {
     * User logout - invalidates refresh token
     */
    static async logout(): Promise<void> {
-      const { tokens, logout, setLoading } = useAuthStore.getState()
+      const { logout, setLoading } = useAuthStore.getState()
 
       try {
          setLoading(true)
-
-         if (tokens?.refreshToken) {
-            // Call backend logout to invalidate refresh token
-            await httpService.post(API_ENDPOINTS.AUTH.LOGOUT, {
-               refreshToken: tokens.refreshToken,
-            })
-         }
+         // Refresh token is read from httpOnly cookie on the server
+         await httpService.post(
+            API_ENDPOINTS.AUTH.LOGOUT,
+            {},
+            {
+               skipAuth: true,
+               skipAuthRefresh: true,
+            }
+         )
       } catch (error) {
          console.error('Logout API call failed:', error)
-         // Continue with logout even if API call fails
       } finally {
-         // Always clear local state
          logout()
          setLoading(false)
          toast.success('Logged out successfully')
+      }
+   }
+
+   /**
+    * Validate httpOnly session cookie and hydrate user profile.
+    */
+   static async restoreSession(): Promise<void> {
+      const { setUser, setAuthenticated, setInitialized, logout } =
+         useAuthStore.getState()
+
+      try {
+         const profile = await httpService.get<User>(
+            API_ENDPOINTS.AUTH.PROFILE,
+            {
+               skipAuthRefresh: true,
+               showErrorToast: false,
+               suppressErrorLogging: true,
+            }
+         )
+         const user = {
+            ...profile,
+            _id: profile.id || profile._id,
+            id: profile.id || profile._id,
+         }
+         setUser(user as User)
+         setAuthenticated(true)
+      } catch {
+         logout()
+         setAuthenticated(false)
+      } finally {
+         setInitialized(true)
       }
    }
 
@@ -197,18 +211,24 @@ export class AuthService {
    }
 
    /**
-    * Verify OTP for password reset
+    * Verify OTP for password reset — returns one-time resetToken
     */
-   static async verifyOTP(data: VerifyOTPRequest): Promise<void> {
+   static async verifyOTP(
+      data: VerifyOTPRequest
+   ): Promise<{ resetToken?: string }> {
       const { setLoading, setError } = useAuthStore.getState()
 
       try {
          setLoading(true)
          setError(null)
 
-         await httpService.post(API_ENDPOINTS.AUTH.VERIFY_OTP, data)
+         const result = await httpService.post<{ resetToken: string }>(
+            API_ENDPOINTS.AUTH.VERIFY_OTP,
+            data
+         )
 
          toast.success('OTP verified successfully!')
+         return result || {}
       } catch (error: any) {
          const errorMessage = error.message || 'OTP verification failed'
          setError(errorMessage)

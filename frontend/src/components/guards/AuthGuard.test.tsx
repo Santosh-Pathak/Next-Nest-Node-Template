@@ -4,12 +4,9 @@ import { RoleGuard, RequireAuth } from '@/components/guards/AuthGuard'
 import { useAuthStore } from '@/store/auth.store'
 import type { User } from '@/types/auth'
 
-vi.mock('js-cookie', () => ({
-   default: {
-      set: vi.fn(),
-      get: vi.fn(),
-      remove: vi.fn(),
-   },
+vi.mock('@/services/auth-session', () => ({
+   setUserCookie: vi.fn(),
+   clearAuthCookies: vi.fn(),
 }))
 
 const adminUser: User = {
@@ -71,7 +68,10 @@ describe('RoleGuard', () => {
 
    it('allows matching roles', () => {
       render(
-         <RoleGuard allowedRoles={['admin', 'superAdmin']} fallback={<p>Denied</p>}>
+         <RoleGuard
+            allowedRoles={['admin', 'superAdmin']}
+            fallback={<p>Denied</p>}
+         >
             <p>Admin panel</p>
          </RoleGuard>
       )

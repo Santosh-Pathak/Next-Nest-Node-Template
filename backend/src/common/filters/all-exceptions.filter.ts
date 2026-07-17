@@ -30,50 +30,46 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
+    let errors: string[] | undefined;
 
-    // Handle custom AppError
     if (exception instanceof AppError) {
       status = exception.statusCode;
       message = exception.message;
-    }
-    // Handle NestJS HttpException
-    else if (exception instanceof HttpException) {
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
-      // Handle validation errors (class-validator)
-      if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
-        const messages = exceptionResponse.message;
-        if (Array.isArray(messages)) {
-          message = messages.join(', ');
+      if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const body = exceptionResponse as Record<string, unknown>;
+
+        if (Array.isArray(body.errors)) {
+          errors = body.errors as string[];
+          message = typeof body.message === 'string' ? body.message : 'Validation failed';
+        } else if (Array.isArray(body.message)) {
+          errors = body.message as string[];
+          message = 'Validation failed';
+        } else if (typeof body.message === 'string') {
+          message = body.message;
         } else {
-          message = messages as string;
+          message = exception.message;
         }
       } else {
         message = typeof exceptionResponse === 'string' ? exceptionResponse : exception.message;
       }
-    }
-    // Handle Mongoose CastError
-    else if (exception instanceof MongooseError.CastError) {
+    } else if (exception instanceof MongooseError.CastError) {
       status = HttpStatus.BAD_REQUEST;
       message = `Invalid ${exception.path}: ${exception.value}`;
-    }
-    // Handle Mongoose ValidationError
-    else if (exception instanceof MongooseError.ValidationError) {
+    } else if (exception instanceof MongooseError.ValidationError) {
       status = HttpStatus.BAD_REQUEST;
-      const errors = Object.values(exception.errors).map((err) => err.message);
-      message = `Invalid input data. ${errors.join('. ')}`;
-    }
-    // Handle MongoDB duplicate key error
-    else if ((exception as { code?: number }).code === 11000) {
+      errors = Object.values(exception.errors).map((err) => err.message);
+      message = 'Invalid input data';
+    } else if ((exception as { code?: number }).code === 11000) {
       status = HttpStatus.BAD_REQUEST;
       const field = Object.keys(
         (exception as { keyPattern?: Record<string, unknown> }).keyPattern || {},
       )[0];
       message = `${field} already exists. Please use another value`;
-    }
-    // Handle JWT errors
-    else if ((exception as { name?: string }).name === 'JsonWebTokenError') {
+    } else if ((exception as { name?: string }).name === 'JsonWebTokenError') {
       status = HttpStatus.UNAUTHORIZED;
       message = 'Invalid token. Please log in again';
     } else if ((exception as { name?: string }).name === 'TokenExpiredError') {
@@ -83,10 +79,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const isDevelopment = process.env.NODE_ENV === 'development';
 
-    // Log error
-    this.logger.error(`${request.method} ${request.url}`, isDevelopment ? exception : message);
+    this.logger.error(
+      `${request.method} ${request.url}`,
+      isDevelopment && exception instanceof Error ? exception.stack : message,
+    );
 
-    // Response format
     const errorResponse: Record<string, unknown> = {
       status: status >= HttpStatus.INTERNAL_SERVER_ERROR ? 'error' : 'fail',
       message,
@@ -94,10 +91,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       path: request.url,
     };
 
-    // Add stack trace in development
-    if (isDevelopment) {
-      errorResponse.error = exception;
-      errorResponse.stack = (exception as Error).stack;
+    if (errors?.length) {
+      errorResponse.errors = errors;
+    }
+
+    if (isDevelopment && exception instanceof Error) {
+      errorResponse.stack = exception.stack;
     }
 
     response.status(status).json(errorResponse);

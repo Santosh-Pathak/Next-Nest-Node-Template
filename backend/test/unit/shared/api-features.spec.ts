@@ -1,11 +1,11 @@
 import { APIFeatures } from '@shared/utils/api-features';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 
-jest.mock('@shared/services/factory.service');
+jest.mock('@shared/services/document-dao.service');
 
 describe('APIFeatures', () => {
   let mockModel: any;
-  let mockFactoryService: jest.Mocked<FactoryService>;
+  let mockDocumentDao: jest.Mocked<DocumentDao>;
 
   beforeEach(() => {
     mockModel = {
@@ -21,11 +21,11 @@ describe('APIFeatures', () => {
       },
     };
 
-    mockFactoryService = {
+    mockDocumentDao = {
       countDocuments: jest.fn(),
     } as any;
 
-    (FactoryService as jest.Mock).mockImplementation(() => mockFactoryService);
+    (DocumentDao as jest.Mock).mockImplementation(() => mockDocumentDao);
   });
 
   afterEach(() => {
@@ -212,20 +212,20 @@ describe('APIFeatures', () => {
 
   describe('calculateTotalCount', () => {
     it('should calculate total count using factory service', async () => {
-      mockFactoryService.countDocuments.mockResolvedValue(50);
+      mockDocumentDao.countDocuments.mockResolvedValue(50);
       const apiFeatures = new APIFeatures(mockModel, { status: 'active' });
       apiFeatures.filter();
 
       await apiFeatures.calculateTotalCount();
 
-      expect(mockFactoryService.countDocuments).toHaveBeenCalledWith(mockModel, {
+      expect(mockDocumentDao.countDocuments).toHaveBeenCalledWith(mockModel, {
         status: 'active',
       });
       expect(apiFeatures.totalCount).toBe(50);
     });
 
     it('should return this for chaining', async () => {
-      mockFactoryService.countDocuments.mockResolvedValue(25);
+      mockDocumentDao.countDocuments.mockResolvedValue(25);
       const apiFeatures = new APIFeatures(mockModel, {});
 
       const result = await apiFeatures.calculateTotalCount();

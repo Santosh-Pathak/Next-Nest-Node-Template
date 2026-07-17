@@ -1,10 +1,8 @@
 name: Backend Deployment - DEV
 
+# Manual only — run after CI is green on the target commit.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 env:
   HOST: ${{ vars.HOST_NAME_dev }}
@@ -20,13 +18,15 @@ jobs:
         working-directory: backend
     steps:
       - name: git-clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup-node
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: install package
-        run: npm install
+        run: npm ci --legacy-peer-deps
 
       - name: Clean from VM
         uses: appleboy/ssh-action@v1.0.3
@@ -37,7 +37,7 @@ jobs:
           port: ${{ env.PORT }}
           script: "bash /home/admin_user/apps/scripts/run-app.sh be clean || true"
 
-      - name: copy file via ssh password
+      - name: copy file via ssh
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.HOST }}
@@ -47,7 +47,7 @@ jobs:
           source: "backend"
           target: /home/admin_user/apps/
 
-      - name: copy script via ssh password
+      - name: copy script via ssh
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.HOST }}
@@ -56,7 +56,7 @@ jobs:
           port: ${{ env.PORT }}
           source: scripts/run-app.sh
           target: /home/admin_user/apps/
-      
+
       - name: Run artifact
         uses: appleboy/ssh-action@v1.0.3
         with:

@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
       DELETE_ACCOUNT: '/api/v1/auth/delete-account',
       REGISTER_USER: '/api/v1/auth/register-user',
       GET_USERS: '/api/v1/users',
-      UPLOAD_FILE: '/api/v1/file/azure-upload',
+      UPLOAD_FILE: '/api/v1/file/upload',
    },
    THEME: {
       GET_ALL: '/api/v1/theme',

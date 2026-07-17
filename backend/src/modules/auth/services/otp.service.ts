@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Otp, OtpDocument } from '../schemas/otp.schema';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 
 @Injectable()
 export class OtpService {
   constructor(
     @InjectModel(Otp.name) private otpModel: Model<OtpDocument>,
-    private factoryService: FactoryService,
+    private documentDao: DocumentDao,
   ) {}
 
   /**
@@ -28,10 +28,10 @@ export class OtpService {
     const expiresIn = new Date(Date.now() + expirationMinutes * 60 * 1000);
 
     // Delete any existing OTP for this email
-    await this.factoryService.deleteMany(this.otpModel, { email });
+    await this.documentDao.deleteMany(this.otpModel, { email });
 
     // Create new OTP
-    await this.factoryService.create(this.otpModel, {
+    await this.documentDao.create(this.otpModel, {
       email,
       otp,
       expiresIn,
@@ -46,7 +46,7 @@ export class OtpService {
    * @param otp - OTP to verify
    */
   async verifyEmailOtp(email: string, otp: string): Promise<boolean> {
-    const otpDoc = await this.factoryService.findOne(this.otpModel, {
+    const otpDoc = await this.documentDao.findOne(this.otpModel, {
       email,
       otp,
       expiresIn: { $gt: new Date() },
@@ -57,7 +57,7 @@ export class OtpService {
     }
 
     // Delete OTP after successful verification
-    await this.factoryService.deleteOne(this.otpModel, { _id: otpDoc._id });
+    await this.documentDao.deleteOne(this.otpModel, { _id: otpDoc._id });
 
     return true;
   }
@@ -66,14 +66,14 @@ export class OtpService {
    * Delete all OTPs for a specific email
    */
   async deleteOtpsByEmail(email: string): Promise<void> {
-    await this.factoryService.deleteMany(this.otpModel, { email });
+    await this.documentDao.deleteMany(this.otpModel, { email });
   }
 
   /**
    * Clean up expired OTPs (MongoDB TTL index handles this automatically)
    */
   async cleanupExpiredOtps(): Promise<void> {
-    await this.factoryService.deleteMany(this.otpModel, {
+    await this.documentDao.deleteMany(this.otpModel, {
       expiresIn: { $lt: new Date() },
     });
   }

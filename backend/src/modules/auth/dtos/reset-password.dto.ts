@@ -10,4 +10,12 @@ export class ResetPasswordDto {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @ApiProperty({
+    example: 'a1b2c3d4e5f6...',
+    description: 'One-time reset token returned from verify-otp',
+  })
+  @IsString()
+  @MinLength(16)
+  resetToken: string;
 }

@@ -1,31 +1,34 @@
 import { Document, Model, PopulateOptions } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { APIFeatures } from '@shared/utils/api-features';
-import { FactoryService } from './factory.service';
+import { DocumentDao } from './document-dao.service';
 
+/**
+ * Template Method: shared CRUD for feature services.
+ * DIP: DocumentDao is injected (never constructed with `new`).
+ */
 @Injectable()
 export abstract class BaseService<T extends Document> {
-  protected factoryService: FactoryService;
-
-  constructor(protected readonly model: Model<T>) {
-    this.factoryService = new FactoryService();
-  }
+  constructor(
+    protected readonly model: Model<T>,
+    protected readonly documentDao: DocumentDao,
+  ) {}
 
   // Using any for createDto to allow flexibility in derived services
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async create(createDto: any): Promise<T> {
-    const doc = await this.factoryService.create(this.model, createDto);
+    const doc = await this.documentDao.create(this.model, createDto);
     return doc;
   }
 
   async findById(id: string, popOptions?: PopulateOptions | PopulateOptions[]): Promise<T> {
-    const options: any = {};
+    const options: Record<string, unknown> = {};
 
     if (popOptions) {
       options.populate = popOptions;
     }
 
-    const doc = await this.factoryService.findById(this.model, id, options);
+    const doc = await this.documentDao.findById(this.model, id, options);
 
     if (!doc) {
       throw new NotFoundException('Document not found with that ID');
@@ -49,7 +52,7 @@ export abstract class BaseService<T extends Document> {
       totalCount: number;
     };
   }> {
-    const features = new APIFeatures(this.model, queryString)
+    const features = new APIFeatures(this.model, queryString, this.documentDao)
       .filter()
       .sort()
       .limitFields()
@@ -78,20 +81,21 @@ export abstract class BaseService<T extends Document> {
   // Using any for updateDto to allow partial updates with any fields
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async update(id: string, updateDto: any): Promise<T> {
-    const doc = await this.factoryService.findById(this.model, id);
+    const doc = await this.documentDao.findById(this.model, id);
 
     if (!doc) {
       throw new NotFoundException('Document not found with that ID');
     }
 
     Object.assign(doc, updateDto);
-    await doc.save({ validateBeforeSave: false });
+    // Keep schema validation on (LSP: subclasses inherit a sound contract)
+    await doc.save();
 
     return doc;
   }
 
   async delete(id: string): Promise<void> {
-    const doc = await this.factoryService.findByIdAndDelete(this.model, id);
+    const doc = await this.documentDao.findByIdAndDelete(this.model, id);
 
     if (!doc) {
       throw new NotFoundException('Document not found with that ID');

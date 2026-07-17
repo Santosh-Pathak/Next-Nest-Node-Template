@@ -71,6 +71,10 @@ export function ResetPasswordForm({
    const [isResetComplete, setIsResetComplete] = useState(false)
 
    const emailFromParams = searchParams.get('email') || ''
+   const resetToken =
+      typeof window !== 'undefined'
+         ? sessionStorage.getItem('passwordResetToken') || ''
+         : ''
 
    const form = useForm<ResetPasswordFormValues>({
       resolver: zodResolver(resetPasswordSchema),
@@ -84,13 +88,22 @@ export function ResetPasswordForm({
 
    const onSubmit = async (values: ResetPasswordFormValues) => {
       try {
+         if (!resetToken) {
+            toast.error('Reset session expired. Please verify OTP again.')
+            router.push(ROUTES.FORGOT_PASSWORD)
+            return
+         }
+
          setLoading(true)
          setError(null)
 
          await AuthService.resetPassword({
             email: values.email,
             password: values.password,
+            resetToken,
          })
+
+         sessionStorage.removeItem('passwordResetToken')
 
          setIsResetComplete(true)
          toast.success('Password reset successfully!')
@@ -104,7 +117,8 @@ export function ResetPasswordForm({
          }, 3000)
       } catch (error: any) {
          console.error('Password reset failed:', error)
-         const errorMessage = error.message || 'Password reset failed. Please try again.'
+         const errorMessage =
+            error.message || 'Password reset failed. Please try again.'
          setError(errorMessage)
          toast.error(errorMessage)
       } finally {
@@ -116,18 +130,25 @@ export function ResetPasswordForm({
    const toggleConfirmPasswordVisibility = () =>
       setShowConfirmPassword(!showConfirmPassword)
 
-   const handlePasswordCopyPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+   const handlePasswordCopyPaste = (
+      e: React.ClipboardEvent<HTMLInputElement>
+   ) => {
       e.preventDefault()
       console.log('Copy/paste is restricted for password fields')
    }
 
-   const handlePasswordContextMenu = (e: React.MouseEvent<HTMLInputElement>) => {
+   const handlePasswordContextMenu = (
+      e: React.MouseEvent<HTMLInputElement>
+   ) => {
       e.preventDefault() // Prevent right-click context menu for copy/paste
    }
 
    const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       // Prevent Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
-      if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+      if (
+         e.ctrlKey &&
+         (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')
+      ) {
          e.preventDefault()
       }
    }

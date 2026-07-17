@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged
+# Monorepo: run lint-staged inside each package so Windows resolves local eslint/prettier
+ROOT="$(cd "$(dirname -- "$0")/../.." && pwd)"
+
+(cd "$ROOT/backend" && npx lint-staged) || exit 1
+(cd "$ROOT/frontend" && npx lint-staged) || exit 1

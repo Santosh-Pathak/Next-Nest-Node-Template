@@ -1,6 +1,6 @@
 import { Document, FilterQuery, Model, PopulateOptions } from 'mongoose';
 import { Types } from 'mongoose';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 
 interface QueryString {
   [key: string]: string | string[];
@@ -18,12 +18,16 @@ export class APIFeatures<T extends Document> {
   private skipValue = 0;
   private limitValue = 100;
   public totalCount = 0;
-  private factoryService: FactoryService;
+  private documentDao: DocumentDao;
 
-  constructor(model: Model<T>, queryString: QueryString) {
+  constructor(
+    model: Model<T>,
+    queryString: QueryString,
+    documentDao: DocumentDao = new DocumentDao(),
+  ) {
     this.model = model;
     this.queryString = queryString;
-    this.factoryService = new FactoryService();
+    this.documentDao = documentDao;
   }
 
   private excludeFieldsAndParseQuery(): FilterQuery<T> {
@@ -80,7 +84,7 @@ export class APIFeatures<T extends Document> {
   }
 
   async calculateTotalCount(): Promise<this> {
-    this.totalCount = await this.factoryService.countDocuments(this.model, this.filterQuery);
+    this.totalCount = await this.documentDao.countDocuments(this.model, this.filterQuery);
     return this;
   }
 

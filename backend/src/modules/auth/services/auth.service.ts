@@ -3,26 +3,31 @@ import {
   UnauthorizedException,
   BadRequestException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from '../../users/services/users.service';
-import { TokenService } from './token.service';
+import { TokenService, AuthTokens } from './token.service';
 import { OtpService } from './otp.service';
+import { EmailService } from '@shared/services/email.service';
 import { UserDocument } from '../../users/schema/userSchema';
-import { TokenType } from '../schemas/token.schema';
 import { Role } from '@common/enums/role.enum';
 import * as bcrypt from 'bcrypt';
 
+/**
+ * Application service for auth use-cases (SRP).
+ * Controllers map HTTP only; orchestration lives here.
+ */
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private tokenService: TokenService,
     private otpService: OtpService,
+    private emailService: EmailService,
   ) {}
 
-  /**
-   * Validate user credentials
-   */
   async validateUser(email: string, password: string): Promise<UserDocument | null> {
     const user = await this.usersService.findByEmail(email);
 
@@ -38,12 +43,9 @@ export class AuthService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...result } = user.toObject();
-    return result;
+    return result as UserDocument;
   }
 
-  /**
-   * Login user with email and password
-   */
   async loginUserWithEmailAndPassword(email: string, password: string) {
     const user = await this.validateUser(email, password);
 
@@ -55,27 +57,26 @@ export class AuthService {
       throw new UnauthorizedException('Account is inactive');
     }
 
-    // Update last login
     await this.usersService.updateUser(String(user._id || user.id), { lastLogin: new Date() });
 
     return user;
   }
 
   /**
-   * Signup new user
+   * Signup — role is always developer (no client escalation).
    */
-  async signup(signupData: { email: string; password: string; name: string; role?: Role }) {
+  async signup(signupData: { email: string; password: string; name: string }) {
     const existingUser = await this.usersService.findByEmail(signupData.email);
 
     if (existingUser) {
       throw new ConflictException('Email already registered');
     }
 
-    const hashedPassword = await bcrypt.hash(signupData.password, 10);
-
     const user = await this.usersService.createUser({
-      ...signupData,
-      password: hashedPassword,
+      name: signupData.name,
+      email: signupData.email,
+      password: signupData.password,
+      role: Role.DEVELOPER,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,9 +85,41 @@ export class AuthService {
     return userWithoutPassword;
   }
 
-  /**
-   * Register user by admin (sends system-generated password)
-   */
+  async signupWithTokens(signupData: { email: string; password: string; name: string }) {
+    const user = await this.signup(signupData);
+    const tokens = await this.tokenService.generateAuthTokens({
+      id: String(user._id || user.id),
+      email: user.email,
+      role: user.role,
+    });
+
+    return { user, tokens };
+  }
+
+  async loginWithTokens(email: string, password: string) {
+    const user = await this.loginUserWithEmailAndPassword(email, password);
+    const tokens = await this.tokenService.generateAuthTokens({
+      id: String(user._id || user.id),
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      user: {
+        id: String(user._id || user.id),
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        photo: user.photo || '',
+      },
+      tokens,
+    };
+  }
+
+  async refreshTokens(refreshToken: string): Promise<AuthTokens> {
+    return this.tokenService.refreshAuthTokens(refreshToken);
+  }
+
   async registerUser(registerData: {
     name: string;
     email: string;
@@ -100,13 +133,11 @@ export class AuthService {
       throw new ConflictException('Email already registered');
     }
 
-    // Generate random password
     const systemPassword = this.generateRandomPassword();
-    const hashedPassword = await bcrypt.hash(systemPassword, 10);
 
     const user = await this.usersService.createUser({
       ...registerData,
-      password: hashedPassword,
+      password: systemPassword,
       isEmailVerified: registerData.isEmailVerified ?? true,
     });
 
@@ -115,49 +146,102 @@ export class AuthService {
 
     return {
       user: userWithoutPassword,
-      systemPassword, // Return to send via email
+      systemPassword,
     };
   }
 
-  /**
-   * Logout user by blacklisting refresh token
-   */
-  async logout(refreshToken: string): Promise<void> {
-    try {
-      const payload = await this.tokenService['jwtService'].verify(refreshToken, {
-        secret: this.tokenService['configService'].get<string>('jwt.refreshSecret'),
-      });
+  async registerUserByAdmin(registerData: {
+    name: string;
+    email: string;
+    role?: Role;
+    description?: string;
+    isEmailVerified?: boolean;
+  }) {
+    const { user, systemPassword } = await this.registerUser(registerData);
 
-      await this.tokenService.blacklistToken(payload.jti, TokenType.REFRESH);
+    try {
+      await this.emailService.sendSystemPasswordEmail(user.name, user.email, systemPassword);
     } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+      this.logger.error('Failed to send system password email', error);
     }
+
+    return { user };
   }
 
-  /**
-   * Refresh authentication tokens
-   */
+  async logout(refreshToken: string): Promise<void> {
+    await this.tokenService.revokeRefreshToken(refreshToken);
+  }
+
   async refreshAuth(refreshToken: string) {
     return this.tokenService.refreshAuthTokens(refreshToken);
   }
 
-  /**
-   * Generate random password
-   */
-  private generateRandomPassword(length = 12): string {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    let password = '';
-
-    for (let i = 0; i < length; i++) {
-      password += charset.charAt(Math.floor(Math.random() * charset.length));
+  async sendVerificationEmail(email: string): Promise<void> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
     }
 
-    return password;
+    const otp = await this.otpService.generateEmailOtp(email);
+
+    try {
+      await this.emailService.sendVerificationEmail(user.name, user.email, otp);
+    } catch (error) {
+      this.logger.error('Failed to send verification email', error);
+      throw new BadRequestException('Failed to send verification email');
+    }
+  }
+
+  async verifyEmail(email: string, otp: string): Promise<void> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const isValidOtp = await this.otpService.verifyEmailOtp(email, otp);
+    if (!isValidOtp) {
+      throw new BadRequestException('Invalid or expired OTP');
+    }
+
+    await this.usersService.updateUser(user._id.toString(), {
+      isEmailVerified: true,
+    });
+  }
+
+  async forgetPassword(email: string): Promise<void> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const otp = await this.otpService.generateEmailOtp(email);
+
+    try {
+      await this.emailService.sendPasswordResetEmail(user.name, user.email, otp);
+    } catch (error) {
+      this.logger.error('Failed to send password reset email', error);
+      throw new BadRequestException('Failed to send password reset email');
+    }
   }
 
   /**
-   * Update user password
+   * Verify OTP and issue a one-time reset token (OTP binding).
    */
+  async verifyPasswordResetOtp(email: string, otp: string): Promise<{ resetToken: string }> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const isValidOtp = await this.otpService.verifyEmailOtp(email, otp);
+    if (!isValidOtp) {
+      throw new BadRequestException('Invalid or expired OTP');
+    }
+
+    const resetToken = await this.tokenService.issuePasswordResetToken(user._id.toString());
+    return { resetToken };
+  }
+
   async updatePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.usersService.findUserById(userId);
 
@@ -171,26 +255,56 @@ export class AuthService {
       throw new UnauthorizedException('Current password is incorrect');
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await this.usersService.updateUser(userId, { password: hashedPassword } as any);
+    await this.usersService.setPassword(userId, newPassword);
   }
 
   /**
-   * Reset password (after OTP verification)
+   * Reset password only with a valid reset token from verify-otp.
    */
-  async resetPassword(email: string, newPassword: string) {
+  async resetPassword(email: string, newPassword: string, resetToken: string) {
+    const userId = await this.tokenService.consumePasswordResetToken(resetToken);
     const user = await this.usersService.findByEmail(email);
 
+    if (!user || user._id.toString() !== userId) {
+      throw new BadRequestException('Invalid reset request');
+    }
+
+    await this.usersService.setPassword(userId, newPassword);
+    await this.tokenService.revokeAllUserTokens(userId);
+
+    try {
+      await this.emailService.sendPasswordResetConfirmation(user.name, user.email);
+    } catch (error) {
+      this.logger.error('Failed to send password reset confirmation', error);
+    }
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.usersService.findUserById(userId);
     if (!user) {
       throw new BadRequestException('User not found');
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
+  }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await this.usersService.updateUser(user._id.toString(), { password: hashedPassword } as any);
+  async updateProfile(
+    userId: string,
+    updateData: { name?: string; email?: string; phone?: string; photo?: string },
+  ) {
+    const user = await this.usersService.updateUser(userId, updateData);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
+  }
 
-    // Revoke all existing tokens
-    await this.tokenService.revokeAllUserTokens(user._id.toString());
+  private generateRandomPassword(length = 12): string {
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
   }
 }

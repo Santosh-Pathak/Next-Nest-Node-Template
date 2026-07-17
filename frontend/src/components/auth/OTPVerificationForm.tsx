@@ -90,7 +90,7 @@ export function OTPVerificationForm({
          setLoading(true)
          setError(null)
 
-         await AuthService.verifyOTP({
+         const result = await AuthService.verifyOTP({
             email: values.email,
             otp: values.otp,
          })
@@ -101,8 +101,15 @@ export function OTPVerificationForm({
          setTimeout(() => {
             if (onSuccess) {
                onSuccess(values.email)
+            } else if (
+               typeFromParams === 'password-reset' &&
+               result?.resetToken
+            ) {
+               sessionStorage.setItem('passwordResetToken', result.resetToken)
+               router.push(
+                  `${ROUTES.RESET_PASSWORD}?email=${encodeURIComponent(values.email)}`
+               )
             } else {
-               // Navigate to reset password page
                router.push(
                   `${ROUTES.RESET_PASSWORD}?email=${encodeURIComponent(values.email)}`
                )
@@ -110,7 +117,8 @@ export function OTPVerificationForm({
          }, 2000)
       } catch (error: any) {
          console.error('OTP verification failed:', error)
-         const errorMessage = error.message || 'OTP verification failed. Please try again.'
+         const errorMessage =
+            error.message || 'OTP verification failed. Please try again.'
          setError(errorMessage)
          toast.error(errorMessage)
       } finally {
@@ -164,7 +172,9 @@ export function OTPVerificationForm({
          }
       } catch (error: any) {
          console.error('Failed to resend OTP:', error)
-         const errorMessage = error.message || 'Failed to resend verification code. Please try again.'
+         const errorMessage =
+            error.message ||
+            'Failed to resend verification code. Please try again.'
          setError(errorMessage)
          toast.error(errorMessage)
       } finally {

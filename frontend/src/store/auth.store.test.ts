@@ -2,12 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAuthStore } from '@/store/auth.store'
 import type { User } from '@/types/auth'
 
-vi.mock('js-cookie', () => ({
-   default: {
-      set: vi.fn(),
-      get: vi.fn(),
-      remove: vi.fn(),
-   },
+vi.mock('@/services/auth-session', () => ({
+   setUserCookie: vi.fn(),
+   clearAuthCookies: vi.fn(),
+   clearLegacyTokenCookies: vi.fn(),
 }))
 
 const sampleUser: User = {
@@ -19,11 +17,6 @@ const sampleUser: User = {
    isEmailVerified: true,
 }
 
-const sampleTokens = {
-   accessToken: 'access-token',
-   refreshToken: 'refresh-token',
-}
-
 describe('auth.store', () => {
    beforeEach(() => {
       useAuthStore.getState().reset()
@@ -32,33 +25,30 @@ describe('auth.store', () => {
          isLoading: false,
          isInitialized: true,
          user: null,
-         tokens: null,
          error: null,
       })
    })
 
    it('logs in and sets authenticated state', () => {
-      useAuthStore.getState().login(sampleUser, sampleTokens)
+      useAuthStore.getState().login(sampleUser)
 
       const state = useAuthStore.getState()
       expect(state.isAuthenticated).toBe(true)
       expect(state.user?.email).toBe('test@example.com')
-      expect(state.tokens?.accessToken).toBe('access-token')
       expect(state.error).toBeNull()
    })
 
-   it('logs out and clears user/tokens', () => {
-      useAuthStore.getState().login(sampleUser, sampleTokens)
+   it('logs out and clears user', () => {
+      useAuthStore.getState().login(sampleUser)
       useAuthStore.getState().logout()
 
       const state = useAuthStore.getState()
       expect(state.isAuthenticated).toBe(false)
       expect(state.user).toBeNull()
-      expect(state.tokens).toBeNull()
    })
 
    it('checks roles correctly', () => {
-      useAuthStore.getState().login(sampleUser, sampleTokens)
+      useAuthStore.getState().login(sampleUser)
 
       expect(useAuthStore.getState().hasRole('developer')).toBe(true)
       expect(useAuthStore.getState().hasRole('admin')).toBe(false)

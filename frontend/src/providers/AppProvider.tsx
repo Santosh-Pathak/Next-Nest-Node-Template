@@ -2,43 +2,35 @@
 
 import React, { useEffect, ReactNode } from 'react'
 import { useAuthStore } from '@/store/auth.store'
+import { AuthService } from '@/services/apis/auth.service'
 
 interface AppProviderProps {
    children: ReactNode
 }
 
 /**
- * Main application provider using Zustand
- * Replaces Redux Provider with simpler Zustand setup
+ * Main application provider using Zustand.
+ * Restores session via httpOnly cookies + /auth/profile.
  */
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
    const { setInitialized, isInitialized } = useAuthStore()
 
    useEffect(() => {
-      // Initialize the app
       const initializeApp = async () => {
          try {
-            // The Zustand store with persistence will automatically
-            // rehydrate and validate tokens from cookies/localStorage
-            
-            // Mark as initialized after rehydration
             if (!isInitialized) {
-               setInitialized(true)
+               await AuthService.restoreSession()
             }
          } catch (error) {
             console.error('App initialization failed:', error)
-            setInitialized(true) // Still mark as initialized to avoid infinite loading
+            setInitialized(true)
          }
       }
 
       initializeApp()
    }, [setInitialized, isInitialized])
 
-   return (
-      <>
-         {children}
-      </>
-   )
+   return <>{children}</>
 }
 
 export default AppProvider

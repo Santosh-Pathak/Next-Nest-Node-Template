@@ -119,6 +119,7 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
    email: string
    password: string
+   resetToken: string
 }
 
 export interface ChangePasswordRequest {

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../schema/userSchema';
 import { BaseService } from '@shared/services/base.service';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
@@ -11,14 +12,20 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 export class UsersService extends BaseService<UserDocument> {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    factoryService: FactoryService,
+    documentDao: DocumentDao,
   ) {
-    super(userModel);
-    this.factoryService = factoryService;
+    super(userModel, documentDao);
   }
 
+  /**
+   * Create user — always hashes password (SRP: persistence owns hashing).
+   */
   async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
-    return this.create(createUserDto);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    return this.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
   }
 
   async findUserById(id: string): Promise<UserDocument> {
@@ -35,11 +42,20 @@ export class UsersService extends BaseService<UserDocument> {
     return this.update(id, updateUserDto);
   }
 
+  /**
+   * Set password from plain text (hashes before update).
+   */
+  async setPassword(id: string, plainPassword: string): Promise<UserDocument> {
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.update(id, { password: hashedPassword } as any);
+  }
+
   async deleteUser(id: string): Promise<void> {
     return this.delete(id);
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.factoryService.findOne(this.userModel, { email }, { select: '+password' });
+    return this.documentDao.findOne(this.userModel, { email }, { select: '+password' });
   }
 }

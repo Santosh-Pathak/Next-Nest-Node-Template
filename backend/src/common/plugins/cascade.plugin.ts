@@ -3,6 +3,10 @@ import { HttpStatus } from '@nestjs/common';
 import { AppError } from '../errors/app-error';
 import { FactoryService } from '@shared/services/factory.service';
 
+/**
+ * Mongoose plugins cannot use Nest DI.
+ * Shared DocumentDao instance is intentional for plugin hooks only — prefer injecting DocumentDao in Nest services.
+ */
 const factoryService = new FactoryService();
 
 interface CascadeRule {

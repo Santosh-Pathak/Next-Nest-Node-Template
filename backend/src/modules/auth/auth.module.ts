@@ -5,14 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
+import { AuthCookieService } from './services/auth-cookie.service';
 import { TokenService } from './services/token.service';
 import { OtpService } from './services/otp.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
 import { Token, TokenSchema } from './schemas/token.schema';
 import { Otp, OtpSchema } from './schemas/otp.schema';
 import { UsersModule } from '../users/users.module';
+import { EmailModule } from '@shared/email.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { UsersModule } from '../users/users.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => {
         return {
-          secret: configService.get<string>('jwt.secret') || 'fallback-secret',
+          secret: configService.getOrThrow<string>('jwt.secret'),
           signOptions: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             expiresIn: (configService.get<string>('jwt.expiresIn') || '1h') as any,
@@ -35,16 +35,10 @@ import { UsersModule } from '../users/users.module';
       { name: Otp.name, schema: OtpSchema },
     ]),
     UsersModule,
+    EmailModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    TokenService,
-    OtpService,
-    JwtStrategy,
-    JwtRefreshStrategy,
-    LocalStrategy,
-  ],
-  exports: [AuthService, TokenService, OtpService],
+  providers: [AuthService, AuthCookieService, TokenService, OtpService, JwtStrategy],
+  exports: [AuthService, AuthCookieService, TokenService, OtpService],
 })
 export class AuthModule {}

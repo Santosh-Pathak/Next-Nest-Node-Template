@@ -2,17 +2,14 @@ name: Frontend Deployment - DEV
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 permissions:
   id-token: write
   contents: read
 
 env:
-  HOST: ${{ vars.HOST_NAME_prod }}
-  USERNAME: ${{ vars.USER_NAME_prod }}
+  HOST: ${{ vars.HOST_NAME_dev }}
+  USERNAME: ${{ vars.USER_NAME_dev }}
   PORT: 22
   NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
   NEXT_PUBLIC_DOMAIN: ${{ vars.NEXT_PUBLIC_DOMAIN }}
@@ -30,14 +27,16 @@ jobs:
       - name: build-npm
         run: |
           cd ./frontend
-          npm install
+          npm ci
           npm run build
           ls -la
           pwd
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ env.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_DOMAIN: ${{ env.NEXT_PUBLIC_DOMAIN }}
 
       - name: create tar
         run: |
-          # Change to create tar from the contents of frontend directory, not the directory itself
           cd ./frontend
           tar -czf ../frontend.tar .
 
@@ -64,17 +63,17 @@ jobs:
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
-          key: ${{ secrets.VM_KEY_prod }}
+          key: ${{ secrets.VM_KEY_dev }}
           port: ${{ env.PORT }}
           source: "./frontend.tar"
           target: /home/admin_user/apps/
 
-      - name: copy script via ssh password
+      - name: copy script via ssh
         uses: appleboy/scp-action@v1
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
-          key: ${{ secrets.VM_KEY_prod }}
+          key: ${{ secrets.VM_KEY_dev }}
           port: ${{ env.PORT }}
           source: scripts/run-app.sh
           target: /home/admin_user/apps/
@@ -84,7 +83,7 @@ jobs:
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
-          key: ${{ secrets.VM_KEY_prod }}
+          key: ${{ secrets.VM_KEY_dev }}
           port: ${{ env.PORT }}
           command_timeout: 350s
           script: bash /home/admin_user/apps/scripts/run-app.sh fe

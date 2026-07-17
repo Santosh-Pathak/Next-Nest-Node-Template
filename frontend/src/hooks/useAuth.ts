@@ -14,7 +14,6 @@ export const useAuth = () => {
       isLoading,
       isInitialized,
       user,
-      tokens,
       error,
       login,
       logout,
@@ -32,7 +31,6 @@ export const useAuth = () => {
       isLoading,
       isInitialized,
       user,
-      tokens,
       error,
 
       // Auth checks

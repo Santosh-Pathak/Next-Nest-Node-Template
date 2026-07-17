@@ -4,6 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Theme } from '../../../src/modules/theme/schema/theme.schema';
 import { NotFoundException } from '@nestjs/common';
 import { ThemeMode } from '../../../src/modules/theme/dtos';
+import { DocumentDao } from '../../../src/shared/services/document-dao.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -126,6 +127,19 @@ describe('ThemeService', () => {
         {
           provide: getModelToken(Theme.name),
           useValue: mockModel,
+        },
+        {
+          provide: DocumentDao,
+          useValue: {
+            create: jest.fn(),
+            findById: jest.fn(),
+            findByIdAndDelete: jest.fn(),
+            findOne: jest.fn(),
+            updateOne: jest.fn(),
+            updateMany: jest.fn(),
+            deleteMany: jest.fn(),
+            countDocuments: jest.fn(),
+          },
         },
       ],
     }).compile();

@@ -1,69 +1,47 @@
-# Architecture Overview
+# Backend architecture (foundation)
 
-## Project Philosophy
+Starter NestJS + MongoDB API designed for **copy-paste feature growth**.
 
-This NestJS application follows a modular, scalable architecture designed for enterprise-level production systems.
+## Patterns in use
 
-## Key Design Patterns
+| Pattern | Where | Notes |
+|---------|--------|--------|
+| **DI / Module** | Nest `@Module` | Prefer constructor injection |
+| **Repository (DAO)** | `DocumentDao` | Injected into `BaseService` / feature services |
+| **Template Method** | `BaseService` | CRUD skeleton for Items/Users/Themes |
+| **Strategy** | `IEmailTransport` | Azure + Nodemailer |
+| **Adapter** | `AzureBlobService` → `IStorageService` | File module uses `STORAGE_SERVICE` token |
+| **Facade** | `EmailService` | Orchestrates transports + templates |
+| **Guard + Decorator** | `AuthorizationGuard` + `@Public` / `@Roles` | OCP-friendly RBAC |
+| **Pipeline** | `APP_FILTER` / `APP_INTERCEPTOR` / `APP_GUARD` / `APP_PIPE` | Cross-cutting |
 
-### 1. Layered Architecture
-- **Controllers**: Handle HTTP requests/responses
-- **Services**: Business logic and data operations
-- **Repositories/Entities**: Data access layer
-- **DTOs**: Data validation and transformation
+## Validation
 
-### 2. Dependency Injection
-NestJS's built-in DI container manages all dependencies, improving testability and maintainability.
+Global `AppValidationPipe`:
 
-### 3. Generic CRUD Factory
-The `BaseService` class provides reusable CRUD operations that any service can extend:
-- Reduces code duplication
-- Ensures consistency across modules
-- Supports advanced querying out of the box
+1. **Zod** DTOs via `createZodDto` (preferred for new modules — see Items)
+2. **class-validator** DTOs for remaining modules
 
-### 4. Middleware & Interceptors
-- **Global Exception Filter**: Unified error handling
-- **Transform Interceptor**: Standardizes all API responses
-- **Validation Pipe**: Automatic DTO validation
+Errors return `{ message, errors: string[] }`.
 
-## Module Structure
+## Adding a feature
 
-Each feature module follows this structure:
-```
-feature/
-├── controllers/     # HTTP layer
-├── dtos/           # Data Transfer Objects
-├── schema/       # Database schemas
-├── services/       # Business logic
-└── feature.module.ts
-```
+1. Duplicate `src/modules/items`
+2. Register module in `app.module.ts`
+3. Prefer Zod DTOs + thin controller → service → `BaseService`/`DocumentDao`
+4. Protect routes with `@AdminOnly()` / `@RequirePermissions()`
 
-## Data Flow
+## Module map
 
-1. **Request** → Controller receives HTTP request
-2. **Validation** → DTOs validate incoming data
-3. **Service** → Business logic processes request
-4. **Database** → Mongoose interacts with MongoDB
-5. **Response** → Interceptor formats response
-6. **Error Handling** → Filter catches and formats errors
+- `SharedModule` — `DocumentDao`, storage port
+- `EmailModule` — email transports + templates
+- `AuthModule` — JWT auth use-cases; access/refresh tokens issued as **httpOnly cookies** (Bearer header still supported)
+- `ItemsModule` — example CRUD template
+- `HealthModule` — `/health` liveness, `/health/ready` readiness
 
-## Best Practices
+## Do not
 
-1. **Single Responsibility**: Each class has one job
-2. **DRY Principle**: Reuse code through base classes and utilities
-3. **Type Safety**: TypeScript throughout
-4. **Validation**: All inputs validated
-5. **Error Handling**: Centralized and consistent
-6. **Testing**: Unit and E2E tests for all features
-7. **Documentation**: Swagger for API docs
-8. **Security**: Helmet, CORS, input sanitization
-
-## Scalability Considerations
-
-- Modular design allows easy feature addition
-- Base services reduce repetitive code
-- Path aliases improve import clarity
-- Shared utilities promote code reuse
-- Environment-based configuration
-- Connection pooling for database
-- Proper indexing on database collections
+- Construct `DocumentDao` with `new` inside Nest providers (plugins are the exception)
+- Accept untyped `@Body()` without a DTO
+- Register unused Passport strategies
+- Put Azure/email into every feature — import `EmailModule` / use `STORAGE_SERVICE` only where needed
