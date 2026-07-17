@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../schema/userSchema';
 import { BaseService } from '@shared/services/base.service';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
@@ -12,9 +12,9 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 export class UsersService extends BaseService<UserDocument> {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    factoryService: FactoryService,
+    documentDao: DocumentDao,
   ) {
-    super(userModel, factoryService);
+    super(userModel, documentDao);
   }
 
   /**
@@ -56,6 +56,6 @@ export class UsersService extends BaseService<UserDocument> {
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.factoryService.findOne(this.userModel, { email }, { select: '+password' });
+    return this.documentDao.findOne(this.userModel, { email }, { select: '+password' });
   }
 }

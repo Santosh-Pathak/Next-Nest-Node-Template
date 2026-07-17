@@ -6,7 +6,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { TokenService } from '../../../src/modules/auth/services/token.service';
 import { Token, TokenType } from '../../../src/modules/auth/schemas/token.schema';
 import { Role } from '../../../src/common/enums/role.enum';
-import { FactoryService } from '../../../src/shared/services/factory.service';
+import { DocumentDao } from '../../../src/shared/services/document-dao.service';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -20,7 +20,7 @@ describe('TokenService', () => {
     deleteMany: jest.fn(),
   };
 
-  const mockFactoryService = {
+  const mockDocumentDao = {
     create: jest.fn(),
     createMany: jest.fn(),
     findOne: jest.fn(),
@@ -59,7 +59,7 @@ describe('TokenService', () => {
         { provide: getModelToken(Token.name), useValue: mockTokenModel },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
-        { provide: FactoryService, useValue: mockFactoryService },
+        { provide: DocumentDao, useValue: mockDocumentDao },
       ],
     }).compile();
 
@@ -83,12 +83,12 @@ describe('TokenService', () => {
       mockJwtService.sign
         .mockReturnValueOnce(mockAccessToken)
         .mockReturnValueOnce(mockRefreshToken);
-      mockFactoryService.createMany.mockResolvedValue([{}, {}]);
+      mockDocumentDao.createMany.mockResolvedValue([{}, {}]);
 
       const result = await service.generateAuthTokens(mockUser);
 
       expect(jwtService.sign).toHaveBeenCalledTimes(2);
-      expect(mockFactoryService.createMany).toHaveBeenCalledWith(
+      expect(mockDocumentDao.createMany).toHaveBeenCalledWith(
         expect.anything(),
         expect.arrayContaining([
           expect.objectContaining({ type: TokenType.ACCESS }),
@@ -103,11 +103,11 @@ describe('TokenService', () => {
 
     it('should save tokens to database with correct expiration', async () => {
       mockJwtService.sign.mockReturnValue('token');
-      mockFactoryService.createMany.mockResolvedValue([{}, {}]);
+      mockDocumentDao.createMany.mockResolvedValue([{}, {}]);
 
       await service.generateAuthTokens(mockUser);
 
-      expect(mockFactoryService.createMany).toHaveBeenCalledWith(
+      expect(mockDocumentDao.createMany).toHaveBeenCalledWith(
         expect.anything(),
         expect.arrayContaining([
           expect.objectContaining({
@@ -132,20 +132,20 @@ describe('TokenService', () => {
       const mockAccessToken = 'new-access-token';
 
       mockJwtService.verify.mockReturnValue(mockPayload);
-      mockFactoryService.findOne.mockResolvedValue(null); // Not blacklisted
+      mockDocumentDao.findOne.mockResolvedValue(null); // Not blacklisted
       mockJwtService.sign.mockReturnValue(mockAccessToken);
-      mockFactoryService.create.mockResolvedValue({});
+      mockDocumentDao.create.mockResolvedValue({});
 
       const result = await service.generateAccessToken(refreshToken);
 
       expect(jwtService.verify).toHaveBeenCalledWith(refreshToken, expect.any(Object));
       expect(result).toBe(mockAccessToken);
-      expect(mockFactoryService.create).toHaveBeenCalled();
+      expect(mockDocumentDao.create).toHaveBeenCalled();
     });
 
     it('should throw UnauthorizedException if refresh token is blacklisted', async () => {
       mockJwtService.verify.mockReturnValue(mockPayload);
-      mockFactoryService.findOne.mockResolvedValue({ blacklisted: true });
+      mockDocumentDao.findOne.mockResolvedValue({ blacklisted: true });
 
       await expect(service.generateAccessToken(refreshToken)).rejects.toThrow(
         UnauthorizedException,
@@ -179,16 +179,16 @@ describe('TokenService', () => {
       };
 
       mockJwtService.verify.mockReturnValue(mockPayload);
-      mockFactoryService.findOne.mockResolvedValue(null); // Not blacklisted
-      mockFactoryService.updateOne.mockResolvedValue({});
+      mockDocumentDao.findOne.mockResolvedValue(null); // Not blacklisted
+      mockDocumentDao.updateOne.mockResolvedValue({});
       mockJwtService.sign
         .mockReturnValueOnce(newTokens.accessToken)
         .mockReturnValueOnce(newTokens.refreshToken);
-      mockFactoryService.createMany.mockResolvedValue([{}, {}]);
+      mockDocumentDao.createMany.mockResolvedValue([{}, {}]);
 
       const result = await service.refreshAuthTokens(refreshToken);
 
-      expect(mockFactoryService.updateOne).toHaveBeenCalledWith(
+      expect(mockDocumentDao.updateOne).toHaveBeenCalledWith(
         expect.anything(),
         { token: mockPayload.jti, type: TokenType.REFRESH },
         { blacklisted: true },
@@ -198,7 +198,7 @@ describe('TokenService', () => {
 
     it('should throw UnauthorizedException if refresh token is blacklisted', async () => {
       mockJwtService.verify.mockReturnValue(mockPayload);
-      mockFactoryService.findOne.mockResolvedValue({ blacklisted: true });
+      mockDocumentDao.findOne.mockResolvedValue({ blacklisted: true });
 
       await expect(service.refreshAuthTokens(refreshToken)).rejects.toThrow(UnauthorizedException);
     });
@@ -207,11 +207,11 @@ describe('TokenService', () => {
   describe('blacklistToken', () => {
     it('should blacklist a token', async () => {
       const tokenId = 'token-id-123';
-      mockFactoryService.updateOne.mockResolvedValue({});
+      mockDocumentDao.updateOne.mockResolvedValue({});
 
       await service.blacklistToken(tokenId, TokenType.REFRESH);
 
-      expect(mockFactoryService.updateOne).toHaveBeenCalledWith(
+      expect(mockDocumentDao.updateOne).toHaveBeenCalledWith(
         expect.anything(),
         { token: tokenId, type: TokenType.REFRESH },
         { blacklisted: true },
@@ -222,12 +222,12 @@ describe('TokenService', () => {
   describe('isTokenBlacklisted', () => {
     it('should return true if token is blacklisted', async () => {
       const tokenId = 'token-id-123';
-      mockFactoryService.findOne.mockResolvedValue({ blacklisted: true });
+      mockDocumentDao.findOne.mockResolvedValue({ blacklisted: true });
 
       const result = await service.isTokenBlacklisted(tokenId, TokenType.ACCESS);
 
       expect(result).toBe(true);
-      expect(mockFactoryService.findOne).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.findOne).toHaveBeenCalledWith(expect.anything(), {
         token: tokenId,
         type: TokenType.ACCESS,
         blacklisted: true,
@@ -236,7 +236,7 @@ describe('TokenService', () => {
 
     it('should return false if token is not blacklisted', async () => {
       const tokenId = 'token-id-123';
-      mockFactoryService.findOne.mockResolvedValue(null);
+      mockDocumentDao.findOne.mockResolvedValue(null);
 
       const result = await service.isTokenBlacklisted(tokenId, TokenType.ACCESS);
 
@@ -247,11 +247,11 @@ describe('TokenService', () => {
   describe('revokeAllUserTokens', () => {
     it('should revoke all tokens for a user', async () => {
       const userId = '507f1f77bcf86cd799439011';
-      mockFactoryService.updateMany.mockResolvedValue({});
+      mockDocumentDao.updateMany.mockResolvedValue({});
 
       await service.revokeAllUserTokens(userId);
 
-      expect(mockFactoryService.updateMany).toHaveBeenCalledWith(
+      expect(mockDocumentDao.updateMany).toHaveBeenCalledWith(
         expect.anything(),
         { user: expect.any(Object) },
         { blacklisted: true },
@@ -261,11 +261,11 @@ describe('TokenService', () => {
 
   describe('deleteExpiredTokens', () => {
     it('should delete expired tokens', async () => {
-      mockFactoryService.deleteMany.mockResolvedValue({ deletedCount: 5 });
+      mockDocumentDao.deleteMany.mockResolvedValue({ deletedCount: 5 });
 
       await service.deleteExpiredTokens();
 
-      expect(mockFactoryService.deleteMany).toHaveBeenCalledWith(expect.anything(), {
+      expect(mockDocumentDao.deleteMany).toHaveBeenCalledWith(expect.anything(), {
         expires: { $lt: expect.any(Date) },
       });
     });

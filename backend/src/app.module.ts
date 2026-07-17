@@ -1,16 +1,12 @@
-import {
-  Module,
-  NestModule,
-  MiddlewareConsumer,
-} from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { randomUUID } from 'crypto';
-import { ConfigurationModule } from './config/configuration.module';
 import { DatabaseModule } from './database/database.module';
 import { SharedModule } from './shared/shared.module';
+import { EmailModule } from './shared/email.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FileModule } from './modules/file/file.module';
@@ -20,13 +16,10 @@ import { ItemsModule } from './modules/items/items.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 import { AuthorizationGuard } from './common/guards/authorization.guard';
-import {
-  RequestIdMiddleware,
-  REQUEST_ID_HEADER,
-} from './common/middleware/request-id.middleware';
+import { RequestIdMiddleware, REQUEST_ID_HEADER } from './common/middleware/request-id.middleware';
 import configuration from './config/configuration';
 import { validateEnv } from './config/validation';
-import { ZodValidationPipe } from './common/pipes/zod-validation.pipe';
+import { AppValidationPipe } from './common/pipes/app-validation.pipe';
 
 @Module({
   imports: [
@@ -85,9 +78,9 @@ import { ZodValidationPipe } from './common/pipes/zod-validation.pipe';
         },
       ],
     }),
-    ConfigurationModule,
     DatabaseModule,
     SharedModule,
+    EmailModule,
     HealthModule,
     UsersModule,
     AuthModule,
@@ -114,7 +107,7 @@ import { ZodValidationPipe } from './common/pipes/zod-validation.pipe';
     },
     {
       provide: APP_PIPE,
-      useClass: ZodValidationPipe,
+      useClass: AppValidationPipe,
     },
   ],
 })

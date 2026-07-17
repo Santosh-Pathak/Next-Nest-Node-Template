@@ -4,7 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Theme } from '../../../src/modules/theme/schema/theme.schema';
 import { NotFoundException } from '@nestjs/common';
 import { ThemeMode } from '../../../src/modules/theme/dtos';
-import { FactoryService } from '../../../src/shared/services/factory.service';
+import { DocumentDao } from '../../../src/shared/services/document-dao.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -129,7 +129,7 @@ describe('ThemeService', () => {
           useValue: mockModel,
         },
         {
-          provide: FactoryService,
+          provide: DocumentDao,
           useValue: {
             create: jest.fn(),
             findById: jest.fn(),

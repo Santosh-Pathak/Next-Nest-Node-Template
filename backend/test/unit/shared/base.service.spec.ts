@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { BaseService } from '@shared/services/base.service';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import { Document, Model } from 'mongoose';
 
 // Mock document class for testing
@@ -11,15 +11,15 @@ class TestDocument extends Document {
 
 // Concrete implementation of BaseService for testing
 class TestService extends BaseService<TestDocument> {
-  constructor(model: Model<TestDocument>, factoryService: FactoryService) {
-    super(model, factoryService);
+  constructor(model: Model<TestDocument>, documentDao: DocumentDao) {
+    super(model, documentDao);
   }
 }
 
 describe('BaseService', () => {
   let service: TestService;
   let mockModel: any;
-  let mockFactoryService: jest.Mocked<FactoryService>;
+  let mockDocumentDao: jest.Mocked<DocumentDao>;
 
   beforeEach(async () => {
     mockModel = {
@@ -34,14 +34,14 @@ describe('BaseService', () => {
       },
     };
 
-    mockFactoryService = {
+    mockDocumentDao = {
       create: jest.fn(),
       findById: jest.fn(),
       findByIdAndDelete: jest.fn(),
       countDocuments: jest.fn(),
     } as any;
 
-    service = new TestService(mockModel, mockFactoryService);
+    service = new TestService(mockModel, mockDocumentDao);
   });
 
   afterEach(() => {
@@ -52,11 +52,11 @@ describe('BaseService', () => {
     it('should create a document', async () => {
       const createDto = { name: 'Test', email: 'test@example.com' };
       const mockDoc = { _id: '123', ...createDto };
-      mockFactoryService.create.mockResolvedValue(mockDoc);
+      mockDocumentDao.create.mockResolvedValue(mockDoc);
 
       const result = await service.create(createDto);
 
-      expect(mockFactoryService.create).toHaveBeenCalledWith(mockModel, createDto);
+      expect(mockDocumentDao.create).toHaveBeenCalledWith(mockModel, createDto);
       expect(result).toEqual(mockDoc);
     });
 
@@ -67,11 +67,11 @@ describe('BaseService', () => {
         address: { city: 'New York', country: 'USA' },
       };
       const mockDoc = { _id: '123', ...createDto };
-      mockFactoryService.create.mockResolvedValue(mockDoc);
+      mockDocumentDao.create.mockResolvedValue(mockDoc);
 
       const result = await service.create(createDto);
 
-      expect(mockFactoryService.create).toHaveBeenCalledWith(mockModel, createDto);
+      expect(mockDocumentDao.create).toHaveBeenCalledWith(mockModel, createDto);
       expect(result).toEqual(mockDoc);
     });
   });
@@ -79,16 +79,16 @@ describe('BaseService', () => {
   describe('findById', () => {
     it('should find document by id', async () => {
       const mockDoc = { _id: '123', name: 'Test', email: 'test@example.com' };
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
 
       const result = await service.findById('123');
 
-      expect(mockFactoryService.findById).toHaveBeenCalledWith(mockModel, '123', {});
+      expect(mockDocumentDao.findById).toHaveBeenCalledWith(mockModel, '123', {});
       expect(result).toEqual(mockDoc);
     });
 
     it('should throw NotFoundException when document not found', async () => {
-      mockFactoryService.findById.mockResolvedValue(null);
+      mockDocumentDao.findById.mockResolvedValue(null);
 
       await expect(service.findById('nonexistent')).rejects.toThrow(NotFoundException);
       await expect(service.findById('nonexistent')).rejects.toThrow(
@@ -98,12 +98,12 @@ describe('BaseService', () => {
 
     it('should find document with populate options', async () => {
       const mockDoc = { _id: '123', name: 'Test', author: { name: 'Author' } };
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
       const populateOptions = { path: 'author', select: 'name' };
 
       const result = await service.findById('123', populateOptions);
 
-      expect(mockFactoryService.findById).toHaveBeenCalledWith(mockModel, '123', {
+      expect(mockDocumentDao.findById).toHaveBeenCalledWith(mockModel, '123', {
         populate: populateOptions,
       });
       expect(result).toEqual(mockDoc);
@@ -111,7 +111,7 @@ describe('BaseService', () => {
 
     it('should find document with array of populate options', async () => {
       const mockDoc = { _id: '123', name: 'Test' };
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
       const populateOptions = [
         { path: 'author', select: 'name' },
         { path: 'category', select: 'title' },
@@ -119,7 +119,7 @@ describe('BaseService', () => {
 
       const result = await service.findById('123', populateOptions);
 
-      expect(mockFactoryService.findById).toHaveBeenCalledWith(mockModel, '123', {
+      expect(mockDocumentDao.findById).toHaveBeenCalledWith(mockModel, '123', {
         populate: populateOptions,
       });
       expect(result).toEqual(mockDoc);
@@ -231,18 +231,18 @@ describe('BaseService', () => {
         email: 'old@example.com',
         save: jest.fn().mockResolvedValue(undefined),
       };
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
 
       const updateDto = { name: 'New Name', email: 'new@example.com' };
       const result = await service.update('123', updateDto);
 
-      expect(mockFactoryService.findById).toHaveBeenCalledWith(mockModel, '123');
+      expect(mockDocumentDao.findById).toHaveBeenCalledWith(mockModel, '123');
       expect(mockDoc.save).toHaveBeenCalled();
       expect(result).toEqual(mockDoc);
     });
 
     it('should throw NotFoundException when document not found', async () => {
-      mockFactoryService.findById.mockResolvedValue(null);
+      mockDocumentDao.findById.mockResolvedValue(null);
 
       await expect(service.update('nonexistent', { name: 'Test' })).rejects.toThrow(
         NotFoundException,
@@ -260,7 +260,7 @@ describe('BaseService', () => {
         role: 'user',
         save: jest.fn().mockResolvedValue(undefined),
       };
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
 
       const updateDto = { name: 'New Name' };
       await service.update('123', updateDto);
@@ -272,15 +272,15 @@ describe('BaseService', () => {
   describe('delete', () => {
     it('should delete a document', async () => {
       const mockDoc = { _id: '123', name: 'Test' };
-      mockFactoryService.findByIdAndDelete.mockResolvedValue(mockDoc);
+      mockDocumentDao.findByIdAndDelete.mockResolvedValue(mockDoc);
 
       await service.delete('123');
 
-      expect(mockFactoryService.findByIdAndDelete).toHaveBeenCalledWith(mockModel, '123');
+      expect(mockDocumentDao.findByIdAndDelete).toHaveBeenCalledWith(mockModel, '123');
     });
 
     it('should throw NotFoundException when document not found', async () => {
-      mockFactoryService.findByIdAndDelete.mockResolvedValue(null);
+      mockDocumentDao.findByIdAndDelete.mockResolvedValue(null);
 
       await expect(service.delete('nonexistent')).rejects.toThrow(NotFoundException);
       await expect(service.delete('nonexistent')).rejects.toThrow(
@@ -289,30 +289,30 @@ describe('BaseService', () => {
     });
   });
 
-  describe('integration with FactoryService', () => {
+  describe('integration with DocumentDao', () => {
     it('should use factory service for all database operations', async () => {
       const createDto = { name: 'Test', email: 'test@example.com' };
       const mockDoc = { _id: '123', ...createDto, save: jest.fn() };
 
-      mockFactoryService.create.mockResolvedValue(mockDoc);
-      mockFactoryService.findById.mockResolvedValue(mockDoc);
-      mockFactoryService.findByIdAndDelete.mockResolvedValue(mockDoc);
+      mockDocumentDao.create.mockResolvedValue(mockDoc);
+      mockDocumentDao.findById.mockResolvedValue(mockDoc);
+      mockDocumentDao.findByIdAndDelete.mockResolvedValue(mockDoc);
 
       // Test create
       await service.create(createDto);
-      expect(mockFactoryService.create).toHaveBeenCalled();
+      expect(mockDocumentDao.create).toHaveBeenCalled();
 
       // Test findById
       await service.findById('123');
-      expect(mockFactoryService.findById).toHaveBeenCalled();
+      expect(mockDocumentDao.findById).toHaveBeenCalled();
 
       // Test update
       await service.update('123', { name: 'Updated' });
-      expect(mockFactoryService.findById).toHaveBeenCalled();
+      expect(mockDocumentDao.findById).toHaveBeenCalled();
 
       // Test delete
       await service.delete('123');
-      expect(mockFactoryService.findByIdAndDelete).toHaveBeenCalled();
+      expect(mockDocumentDao.findByIdAndDelete).toHaveBeenCalled();
     });
   });
 });

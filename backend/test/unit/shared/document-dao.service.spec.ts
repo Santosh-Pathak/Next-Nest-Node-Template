@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import mongoose, { Model } from 'mongoose';
 
-describe('FactoryService', () => {
-  let service: FactoryService;
+describe('DocumentDao', () => {
+  let service: DocumentDao;
   let mockModel: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FactoryService],
+      providers: [DocumentDao],
     }).compile();
 
-    service = module.get<FactoryService>(FactoryService);
+    service = module.get<DocumentDao>(DocumentDao);
 
     // Create a comprehensive mock model
     mockModel = {

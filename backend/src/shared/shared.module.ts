@@ -1,40 +1,22 @@
 import { Module, Global } from '@nestjs/common';
 import { AzureBlobService } from './services/azure-blob.service';
-import { AzureEmailService } from './services/azure-email.service';
-import { EmailService } from './services/email.service';
-import { EmailTemplateService } from './services/email-template.service';
-import { FactoryService } from './services/factory.service';
-import { AzureEmailTransport } from './services/transports/azure-email.transport';
-import { NodemailerEmailTransport } from './services/transports/nodemailer-email.transport';
-import { STORAGE_SERVICE, EMAIL_TRANSPORTS } from './tokens';
+import { DocumentDao } from './services/document-dao.service';
+import { STORAGE_SERVICE } from './tokens';
 
+/**
+ * Cross-cutting persistence + storage ports only.
+ * Email lives in EmailModule; feature modules import what they need.
+ */
 @Global()
 @Module({
   providers: [
-    FactoryService,
+    DocumentDao,
     AzureBlobService,
     {
       provide: STORAGE_SERVICE,
       useExisting: AzureBlobService,
     },
-    AzureEmailService,
-    AzureEmailTransport,
-    NodemailerEmailTransport,
-    EmailTemplateService,
-    {
-      provide: EMAIL_TRANSPORTS,
-      useFactory: (azure: AzureEmailTransport, smtp: NodemailerEmailTransport) => [azure, smtp],
-      inject: [AzureEmailTransport, NodemailerEmailTransport],
-    },
-    EmailService,
   ],
-  exports: [
-    FactoryService,
-    AzureBlobService,
-    STORAGE_SERVICE,
-    AzureEmailService,
-    EmailService,
-    EmailTemplateService,
-  ],
+  exports: [DocumentDao, AzureBlobService, STORAGE_SERVICE],
 })
 export class SharedModule {}

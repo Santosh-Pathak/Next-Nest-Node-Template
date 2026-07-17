@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseService } from '@shared/services/base.service';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import { Item, ItemDocument } from '../schema/item.schema';
 import { CreateItemDto } from '../dtos/create-item.dto';
 import { UpdateItemDto } from '../dtos/update-item.dto';
@@ -11,9 +11,9 @@ import { UpdateItemDto } from '../dtos/update-item.dto';
 export class ItemsService extends BaseService<ItemDocument> {
   constructor(
     @InjectModel(Item.name) private readonly itemModel: Model<ItemDocument>,
-    factoryService: FactoryService,
+    documentDao: DocumentDao,
   ) {
-    super(itemModel, factoryService);
+    super(itemModel, documentDao);
   }
 
   async createItem(dto: CreateItemDto, userId: string): Promise<ItemDocument> {

@@ -67,13 +67,18 @@ docker compose up --build
 |--------|----------------|
 | Logging | Pino via `nestjs-pino` + `x-request-id` |
 | Rate limit | `@nestjs/throttler` (`RATE_LIMIT_TTL` / `RATE_LIMIT_MAX`) |
-| Health | Terminus liveness + Mongo readiness |
+| Health | `/health` liveness · `/health/ready` Mongo (+ optional disk) |
 | Example CRUD | `Items` module (BE + FE `/items`) — copy this pattern |
 | Seed | `npm run seed` / `npm run seed -- --reset` |
-| Validation | Zod env (`validateEnv`) + `ZodValidationPipe` / `createZodDto` (auth + items); class-validator elsewhere |
+| Validation | `AppValidationPipe`: Zod (`createZodDto`) preferred; class-validator supported |
+| Persistence | `DocumentDao` + `BaseService` (Repository / Template Method) |
+| Email | Strategy transports via `EmailModule` (`IEmailTransport`) |
+| Storage | `IStorageService` / `STORAGE_SERVICE` token |
 | FE env | Zod-validated `src/config/env.ts` |
 | FE tests | Vitest + Testing Library (`npm test` in frontend) |
 | BE tests | Jest (`npm test` in backend) |
+
+See `backend/docs/ARCHITECTURE.md` for design patterns and how to add features.
 
 ## Copying a new feature
 

@@ -3,10 +3,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
+  HealthIndicatorResult,
   MongooseHealthIndicator,
-  MemoryHealthIndicator,
   DiskHealthIndicator,
 } from '@nestjs/terminus';
+import { ConfigService } from '@nestjs/config';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '@common/decorators/authorization.decorator';
 
@@ -18,36 +19,39 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly mongoose: MongooseHealthIndicator,
-    private readonly memory: MemoryHealthIndicator,
     private readonly disk: DiskHealthIndicator,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
-   * Liveness probe — process is up (no dependency checks).
+   * Liveness — process is up (no external dependency checks).
    */
   @Get()
-  @HealthCheck()
   @ApiOperation({ summary: 'Liveness probe' })
-  check() {
-    return this.health.check([
-      () => this.memory.checkHeap('memory_heap', 512 * 1024 * 1024),
-    ]);
+  live() {
+    return { status: 'ok', info: { app: { status: 'up' } } };
   }
 
   /**
-   * Readiness probe — app can serve traffic (Mongo + disk).
+   * Readiness — Mongo required; disk optional via HEALTH_CHECK_DISK=true.
    */
   @Get('ready')
   @HealthCheck()
-  @ApiOperation({ summary: 'Readiness probe (MongoDB + disk)' })
+  @ApiOperation({ summary: 'Readiness probe (MongoDB)' })
   ready() {
-    return this.health.check([
+    const checks: Array<() => Promise<HealthIndicatorResult>> = [
       () => this.mongoose.pingCheck('mongodb'),
-      () =>
+    ];
+
+    if (this.configService.get<boolean>('health.checkDisk')) {
+      checks.push(() =>
         this.disk.checkStorage('disk', {
           path: process.platform === 'win32' ? 'C:\\' : '/',
           thresholdPercent: 0.95,
         }),
-    ]);
+      );
+    }
+
+    return this.health.check(checks);
   }
 }

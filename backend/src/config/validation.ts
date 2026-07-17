@@ -30,12 +30,24 @@ export const envSchema = z.object({
   RATE_LIMIT_TTL: z.coerce.number().default(60),
   RATE_LIMIT_MAX: z.coerce.number().default(100),
 
-  LOG_LEVEL: z
-    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
-    .default('info'),
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 
   SEED_ADMIN_EMAIL: z.string().email().optional(),
   SEED_ADMIN_PASSWORD: z.string().optional(),
+
+  // Optional Azure — app boots without them; File/Email adapters warn if missing
+  AZURE_STORAGE_ACCOUNT_NAME: z.string().optional(),
+  AZURE_STORAGE_ACCOUNT_KEY: z.string().optional(),
+  AZURE_STORAGE_CONNECTION_STRING: z.string().optional(),
+  AZURE_CONTAINER_NAME: z.string().default('uploads'),
+  AZURE_COMMUNICATION_SERVICES_CONNECTION_STRING: z.string().optional(),
+  AZURE_SENDER_EMAIL: z.string().email().optional(),
+  ADMIN_EMAIL: z.string().email().optional(),
+
+  HEALTH_CHECK_DISK: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

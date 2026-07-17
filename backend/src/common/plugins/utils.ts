@@ -66,12 +66,11 @@ export class PluginConfigBuilder {
 export class ModelRelationshipManager {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private models: Map<string, Model<any>> = new Map();
-  private factoryService: FactoryService;
+  /** Plugin helper — Nest DI unavailable in Mongoose plugin context */
+  private documentDao = new FactoryService();
 
   constructor() {
-    // Auto-discover registered models
     this.discoverModels();
-    this.factoryService = new FactoryService();
   }
 
   /**
@@ -142,7 +141,7 @@ export class ModelRelationshipManager {
         throw new AppError(`Model ${modelName} not found`, HttpStatus.NOT_FOUND);
       }
 
-      const doc = await this.factoryService.findById(model, documentId);
+      const doc = await this.documentDao.findById(model, documentId);
       if (!doc) {
         throw new AppError(
           `Document with ID ${documentId} not found in ${modelName}`,

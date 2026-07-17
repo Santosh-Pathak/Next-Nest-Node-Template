@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Model, Types } from 'mongoose';
 import { Token, TokenDocument, TokenType } from '../schemas/token.schema';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import * as crypto from 'crypto';
 
 interface JwtPayload {
@@ -25,7 +25,7 @@ export class TokenService {
     @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private factoryService: FactoryService,
+    private documentDao: DocumentDao,
   ) {}
 
   /**
@@ -70,7 +70,7 @@ export class TokenService {
     const refreshTokenExpiresAt = new Date(Date.now() + this.parseExpiry(refreshTokenExpiry));
 
     // Save tokens to database
-    await this.factoryService.createMany(this.tokenModel, [
+    await this.documentDao.createMany(this.tokenModel, [
       {
         token: accessTokenId,
         user: new Types.ObjectId(user.id),
@@ -127,7 +127,7 @@ export class TokenService {
 
       // Save new access token
       const accessTokenExpiresAt = new Date(Date.now() + this.parseExpiry(accessTokenExpiry));
-      await this.factoryService.create(this.tokenModel, {
+      await this.documentDao.create(this.tokenModel, {
         token: accessTokenId,
         user: new Types.ObjectId(payload.sub),
         type: TokenType.ACCESS,
@@ -200,7 +200,7 @@ export class TokenService {
     const tokenId = this.generateTokenId();
     const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    await this.factoryService.create(this.tokenModel, {
+    await this.documentDao.create(this.tokenModel, {
       token: tokenId,
       user: new Types.ObjectId(userId),
       type: TokenType.RESET_PASSWORD,
@@ -215,7 +215,7 @@ export class TokenService {
    * Consume a password-reset token. Returns user id if valid.
    */
   async consumePasswordResetToken(resetToken: string): Promise<string> {
-    const doc = await this.factoryService.findOne(this.tokenModel, {
+    const doc = await this.documentDao.findOne(this.tokenModel, {
       token: resetToken,
       type: TokenType.RESET_PASSWORD,
       blacklisted: false,
@@ -234,7 +234,7 @@ export class TokenService {
    * Blacklist a token
    */
   async blacklistToken(tokenId: string, type: TokenType): Promise<void> {
-    await this.factoryService.updateOne(
+    await this.documentDao.updateOne(
       this.tokenModel,
       { token: tokenId, type },
       { blacklisted: true },
@@ -245,7 +245,7 @@ export class TokenService {
    * Check if token is blacklisted
    */
   async isTokenBlacklisted(tokenId: string, type: TokenType): Promise<boolean> {
-    const token = await this.factoryService.findOne(this.tokenModel, {
+    const token = await this.documentDao.findOne(this.tokenModel, {
       token: tokenId,
       type,
       blacklisted: true,
@@ -258,7 +258,7 @@ export class TokenService {
    * Revoke all tokens for a user
    */
   async revokeAllUserTokens(userId: string): Promise<void> {
-    await this.factoryService.updateMany(
+    await this.documentDao.updateMany(
       this.tokenModel,
       { user: new Types.ObjectId(userId) },
       { blacklisted: true },
@@ -269,7 +269,7 @@ export class TokenService {
    * Delete expired tokens (cleanup job)
    */
   async deleteExpiredTokens(): Promise<void> {
-    await this.factoryService.deleteMany(this.tokenModel, {
+    await this.documentDao.deleteMany(this.tokenModel, {
       expires: { $lt: new Date() },
     });
   }

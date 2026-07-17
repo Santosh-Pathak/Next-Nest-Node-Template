@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
@@ -20,8 +20,9 @@ async function bootstrap() {
   app.use(helmet());
   app.use(compression());
 
+  const corsOrigin = configService.get<string>('CORS_ORIGIN') || '*';
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN')?.split(',') || '*',
+    origin: corsOrigin === '*' ? true : corsOrigin.split(',').map((o) => o.trim()),
     credentials: true,
   });
 
@@ -33,25 +34,18 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  // Validation is handled by AppValidationPipe (APP_PIPE) — Zod + class-validator
 
   if (configService.get('NODE_ENV') !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('App API')
-      .setDescription('NestJS + MongoDB starter API')
+      .setDescription('NestJS + MongoDB starter API — copy Items module for new features')
       .setVersion('1.0')
       .addBearerAuth()
-      .addTag('users')
       .addTag('auth')
+      .addTag('users')
+      .addTag('items')
+      .addTag('health')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

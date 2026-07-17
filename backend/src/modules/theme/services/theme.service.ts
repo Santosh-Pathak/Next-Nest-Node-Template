@@ -3,16 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Theme, ThemeDocument } from '../schema/theme.schema';
 import { BaseService } from '@shared/services/base.service';
-import { FactoryService } from '@shared/services/factory.service';
+import { DocumentDao } from '@shared/services/document-dao.service';
 import { CreateThemeDto, UpdateThemeDto, PreviewThemeDto, ThemeMode } from '../dtos';
 
 @Injectable()
 export class ThemeService extends BaseService<ThemeDocument> {
   constructor(
     @InjectModel(Theme.name) private themeModel: Model<ThemeDocument>,
-    factoryService: FactoryService,
+    documentDao: DocumentDao,
   ) {
-    super(themeModel, factoryService);
+    super(themeModel, documentDao);
   }
 
   /**

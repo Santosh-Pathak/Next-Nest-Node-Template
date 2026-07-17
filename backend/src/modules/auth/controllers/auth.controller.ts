@@ -20,7 +20,8 @@ import { ForgetPasswordDto } from '../dtos/forget-password.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { UpdatePasswordDto } from '../dtos/update-password.dto';
 import { LogoutDto } from '../dtos/logout.dto';
-import { GetUser } from '../decorators/get-user.decorator';
+import { UpdateProfileDto } from '../dtos/update-profile.dto';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
 import { Public, AdminOnly } from '@common/decorators/authorization.decorator';
 
 /**
@@ -176,7 +177,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid current password' })
   async updatePassword(
     @Body() updatePasswordDto: UpdatePasswordDto,
-    @GetUser('userId') userId: string,
+    @CurrentUser('userId') userId: string,
   ) {
     if (updatePasswordDto.password !== updatePasswordDto.confirmPassword) {
       throw new BadRequestException('Password and confirm password do not match');
@@ -195,7 +196,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Profile fetched successfully' })
-  async getProfile(@GetUser('userId') userId: string) {
+  async getProfile(@CurrentUser('userId') userId: string) {
     const data = await this.authService.getProfile(userId);
     return {
       message: 'Profile fetched successfully',
@@ -207,10 +208,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Profile updated successfully' })
-  async updateProfile(
-    @Body() updateData: { name?: string; email?: string; phone?: string; photo?: string },
-    @GetUser('userId') userId: string,
-  ) {
+  async updateProfile(@Body() updateData: UpdateProfileDto, @CurrentUser('userId') userId: string) {
     const data = await this.authService.updateProfile(userId, updateData);
     return {
       message: 'Profile updated successfully',
