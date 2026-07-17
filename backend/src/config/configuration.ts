@@ -42,6 +42,11 @@ export default () => ({
     corsOrigin: process.env.CORS_ORIGIN || '*',
     rateLimitTtl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10),
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
+    // Use "none" + COOKIE_SECURE=true for cross-origin SPA; "lax" for same-origin proxy
+    cookieSameSite: process.env.COOKIE_SAME_SITE || 'lax',
+    cookieSecure:
+      process.env.COOKIE_SECURE === 'true' ||
+      (process.env.COOKIE_SECURE !== 'false' && process.env.NODE_ENV === 'production'),
   },
 
   logging: {

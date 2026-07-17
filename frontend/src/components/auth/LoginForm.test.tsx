@@ -4,12 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { useAuthStore } from '@/store/auth.store'
 
-vi.mock('js-cookie', () => ({
-   default: {
-      set: vi.fn(),
-      get: vi.fn(),
-      remove: vi.fn(),
-   },
+vi.mock('@/services/auth-session', () => ({
+   setUserCookie: vi.fn(),
+   clearAuthCookies: vi.fn(),
 }))
 
 vi.mock('@/services/apis/auth.service', () => ({
@@ -73,9 +70,7 @@ describe('LoginForm', () => {
       await user.type(screen.getByLabelText(/^password/i), 'secret1')
 
       await waitFor(() => {
-         expect(
-            screen.getByRole('button', { name: /sign in/i })
-         ).toBeEnabled()
+         expect(screen.getByRole('button', { name: /sign in/i })).toBeEnabled()
       })
    })
 })

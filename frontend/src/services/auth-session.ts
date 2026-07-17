@@ -2,40 +2,36 @@ import toast from 'react-hot-toast'
 import { STORAGE_KEYS, ROUTES } from '@/constants/urls'
 
 /**
- * Auth session cookie helpers (SRP).
- * Used by HttpService — keeps token I/O out of the HTTP transport class core.
+ * Auth session helpers — tokens live in httpOnly cookies set by the API.
+ * JS only manages the non-sensitive USER cookie for Next.js route guards.
  */
 
-export function getAccessTokenFromCookie(): string | null {
-   if (typeof window === 'undefined') return null
-   const cookies = document.cookie.split(';')
-   const tokenCookie = cookies.find((cookie) =>
-      cookie.trim().startsWith(`${STORAGE_KEYS.ACCESS_TOKEN}=`)
-   )
-   return tokenCookie ? tokenCookie.split('=')[1] : null
-}
-
-export function getRefreshTokenFromCookie(): string | null {
-   if (typeof window === 'undefined') return null
-   const cookies = document.cookie.split(';')
-   const tokenCookie = cookies.find((cookie) =>
-      cookie.trim().startsWith(`${STORAGE_KEYS.REFRESH_TOKEN}=`)
-   )
-   return tokenCookie ? tokenCookie.split('=')[1] : null
-}
-
-export function updateAccessTokenCookie(newToken: string): void {
-   if (typeof window === 'undefined') return
+const userCookieOptions = (): string => {
    const isProduction = process.env.NODE_ENV === 'production'
    const secure = isProduction ? '; secure' : ''
-   document.cookie = `${STORAGE_KEYS.ACCESS_TOKEN}=${newToken}; path=/; samesite=strict${secure}`
+   return `path=/; samesite=lax${secure}`
 }
 
-export function clearAuthCookies(): void {
+export function setUserCookie(user: unknown): void {
+   if (typeof window === 'undefined') return
+   document.cookie = `${STORAGE_KEYS.USER}=${encodeURIComponent(JSON.stringify(user))}; ${userCookieOptions()}`
+}
+
+export function clearUserCookie(): void {
+   if (typeof window === 'undefined') return
+   document.cookie = `${STORAGE_KEYS.USER}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+}
+
+/** Clears any legacy non-httpOnly token cookies from older clients. */
+export function clearLegacyTokenCookies(): void {
    if (typeof window === 'undefined') return
    document.cookie = `${STORAGE_KEYS.ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
    document.cookie = `${STORAGE_KEYS.REFRESH_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-   document.cookie = `${STORAGE_KEYS.USER}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+}
+
+export function clearAuthCookies(): void {
+   clearUserCookie()
+   clearLegacyTokenCookies()
 }
 
 let isLoggingOut = false
@@ -62,13 +58,4 @@ export function handleSessionExpired(): void {
       window.location.href = ROUTES.LOGIN
       isLoggingOut = false
    }, 1000)
-}
-
-export function syncAccessTokenToStore(accessToken: string): void {
-   if (typeof window === 'undefined') return
-   import('@/store/auth.store')
-      .then(({ useAuthStore }) => {
-         useAuthStore.getState().refreshAccessToken(accessToken)
-      })
-      .catch(console.error)
 }

@@ -7,9 +7,14 @@ import {
   Get,
   Patch,
   BadRequestException,
+  UnauthorizedException,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
+import { AuthCookieService } from '../services/auth-cookie.service';
 import { SignupDto } from '../dtos/signup.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterUserDto } from '../dtos/register-user.dto';
@@ -23,14 +28,19 @@ import { LogoutDto } from '../dtos/logout.dto';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
 import { Public, AdminOnly } from '@common/decorators/authorization.decorator';
+import { AUTH_COOKIES } from '../constants/auth-cookies';
 
 /**
  * Thin HTTP adapter (SRP): maps requests to AuthService use-cases only.
+ * Auth tokens are issued as httpOnly cookies (Bearer still supported for API clients).
  */
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly authCookieService: AuthCookieService,
+  ) {}
 
   @Public()
   @Post('signup')
@@ -39,11 +49,12 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK, description: 'User created successfully' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad request' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Email already registered' })
-  async signup(@Body() signupDto: SignupDto) {
+  async signup(@Body() signupDto: SignupDto, @Res({ passthrough: true }) res: Response) {
     const { user, tokens } = await this.authService.signupWithTokens(signupDto);
+    this.authCookieService.setAuthCookies(res, tokens);
     return {
       message: 'User created successfully',
-      data: { user, tokens },
+      data: { user },
     };
   }
 
@@ -53,11 +64,12 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User logged in successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const data = await this.authService.loginWithTokens(loginDto.email, loginDto.password);
+    this.authCookieService.setAuthCookies(res, data.tokens);
     return {
       message: 'User logged in successfully',
-      data,
+      data: { user: data.user },
     };
   }
 
@@ -67,22 +79,44 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh authentication tokens' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Tokens refreshed successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid refresh token' })
-  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
-    const tokens = await this.authService.refreshTokens(refreshTokenDto.refreshToken);
+  async refreshTokens(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() refreshTokenDto: RefreshTokenDto = {},
+  ) {
+    const refreshToken = req.cookies?.[AUTH_COOKIES.REFRESH_TOKEN] || refreshTokenDto?.refreshToken;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
+    }
+
+    const tokens = await this.authService.refreshTokens(refreshToken);
+    this.authCookieService.setAuthCookies(res, tokens);
     return {
       message: 'Tokens refreshed successfully',
-      data: tokens,
+      data: { refreshed: true },
     };
   }
 
   @Public()
   @Post('logout')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User logout' })
-  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Logout successfully' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Logout successfully' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid refresh token' })
-  async logout(@Body() logoutDto: LogoutDto) {
-    await this.authService.logout(logoutDto.refreshToken);
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() logoutDto: LogoutDto = {},
+  ) {
+    const refreshToken = req.cookies?.[AUTH_COOKIES.REFRESH_TOKEN] || logoutDto?.refreshToken;
+
+    if (refreshToken) {
+      await this.authService.logout(refreshToken);
+    }
+
+    this.authCookieService.clearAuthCookies(res);
+    return { message: 'Logged out successfully' };
   }
 
   @Post('register-user')

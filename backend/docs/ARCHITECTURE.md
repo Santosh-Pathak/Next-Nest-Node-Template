@@ -35,7 +35,7 @@ Errors return `{ message, errors: string[] }`.
 
 - `SharedModule` — `DocumentDao`, storage port
 - `EmailModule` — email transports + templates
-- `AuthModule` — JWT auth use-cases (Passport JWT strategy only)
+- `AuthModule` — JWT auth use-cases; access/refresh tokens issued as **httpOnly cookies** (Bearer header still supported)
 - `ItemsModule` — example CRUD template
 - `HealthModule` — `/health` liveness, `/health/ready` readiness
 
