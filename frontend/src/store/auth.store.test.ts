@@ -5,6 +5,7 @@ import type { User } from '@/types/auth'
 vi.mock('@/services/auth-session', () => ({
    setUserCookie: vi.fn(),
    clearAuthCookies: vi.fn(),
+   clearLegacyTokenCookies: vi.fn(),
 }))
 
 const sampleUser: User = {

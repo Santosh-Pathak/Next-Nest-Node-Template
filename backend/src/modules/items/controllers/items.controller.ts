@@ -15,10 +15,7 @@ import { ItemsService } from '../services/items.service';
 import { CreateItemDto } from '../dtos/create-item.dto';
 import { UpdateItemDto } from '../dtos/update-item.dto';
 import { ApiPaginationQuery } from '@common/decorators/api-pagination.decorator';
-import {
-  AdminAndDeveloper,
-  AdminAndSuperAdmin,
-} from '@common/decorators/authorization.decorator';
+import { AdminAndDeveloper, AdminAndSuperAdmin } from '@common/decorators/authorization.decorator';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
 
 @ApiTags('items')
@@ -33,10 +30,7 @@ export class ItemsController {
     summary: 'Create an item (example CRUD — copy this module for new features)',
   })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Item created' })
-  async create(
-    @Body() createItemDto: CreateItemDto,
-    @CurrentUser('userId') userId: string,
-  ) {
+  async create(@Body() createItemDto: CreateItemDto, @CurrentUser('userId') userId: string) {
     const item = await this.itemsService.createItem(createItemDto, userId);
     return {
       message: 'Item created successfully',
